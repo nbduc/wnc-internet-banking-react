@@ -1,25 +1,98 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import { Routes, Route, useLocation } from "react-router-dom";
+import { customerListItems } from "./common";
+import { useDispatch } from "react-redux";
+import { useLayoutEffect } from "react";
+import { setActivePage, setPageList } from "./features/Page/pageSlice";
+import LoginPage from "./pages/Login";
+import HomePage from "./pages/Home";
+import PaymentRequestPage from "./pages/PaymentRequest";
+import DefaultLayout from "./layouts/DefaultLayout";
+import TransferPage from "./pages/Transfer";
+import RecipientPage from "./pages/RecipientPage";
+import ForgotPasswordPage from "./pages/ForgotPassword";
+import VerificationCodePage from "./pages/VerificationCode";
+import ResetPasswordPage from "./pages/ResetPassword";
+import ChangePasswordPage from "./pages/ChangePassword";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const dispatch = useDispatch();
+    const location = useLocation();
+
+    useLayoutEffect(() => {
+        dispatch(setPageList(customerListItems));
+    }, [dispatch]);
+
+    useLayoutEffect(() => {
+        const activePageIndex = customerListItems.findIndex((item) => {
+            return location.pathname === item.link;
+        });
+        dispatch(setActivePage(activePageIndex));
+    }, [dispatch, location]);
+    return (
+        <div className="App">
+            <Routes>
+                <Route exact path="/login" element={<LoginPage />} />
+                <Route
+                    exact
+                    path="/"
+                    element={
+                        <DefaultLayout>
+                            <HomePage />
+                        </DefaultLayout>
+                    }
+                />
+                <Route
+                    exact
+                    path="/forgot-password"
+                    element={<ForgotPasswordPage />}
+                />
+                <Route
+                    exact
+                    path="/verification-code"
+                    element={<VerificationCodePage />}
+                />
+                <Route
+                    exact
+                    path="/reset-password"
+                    element={<ResetPasswordPage />}
+                />
+                <Route
+                    exact
+                    path="/recipients"
+                    element={
+                        <DefaultLayout>
+                            <RecipientPage />
+                        </DefaultLayout>
+                    }
+                />
+                <Route
+                    exact
+                    path="/transfer"
+                    element={
+                        <DefaultLayout>
+                            <TransferPage />
+                        </DefaultLayout>
+                    }
+                />
+
+                <Route
+                    exact
+                    path="/payment-requests"
+                    element={
+                        <DefaultLayout>
+                            <PaymentRequestPage />
+                        </DefaultLayout>
+                    }
+                />
+                <Route
+                    exact
+                    path="/change-password"
+                    element={<ChangePasswordPage />}
+                />
+            </Routes>
+        </div>
+    );
 }
 
 export default App;
