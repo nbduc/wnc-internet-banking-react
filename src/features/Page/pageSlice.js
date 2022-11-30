@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     activePage: null,
     items: [],
+    userItems: [],
 };
 
 const pageSlice = createSlice({
@@ -15,8 +16,12 @@ const pageSlice = createSlice({
         setPageList: (state, action) => {
             state.items = action.payload;
         },
+        setUserPageList: (state, action) => {
+            state.userItems = action.payload;
+        },
     },
 });
 
-export const { setActivePage, setPageList } = pageSlice.actions;
+export const { setActivePage, setPageList, setUserPageList } =
+    pageSlice.actions;
 export default pageSlice.reducer;

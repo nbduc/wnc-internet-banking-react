@@ -1,9 +1,13 @@
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { customerListItems } from "./common";
+import { customerListItems, userListItems } from "./common";
 import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
-import { setActivePage, setPageList } from "./features/Page/pageSlice";
+import {
+    setActivePage,
+    setPageList,
+    setUserPageList,
+} from "./features/Page/pageSlice";
 import LoginPage from "./pages/Login";
 import HomePage from "./pages/Home";
 import PaymentRequestPage from "./pages/PaymentRequest";
@@ -14,6 +18,7 @@ import ForgotPasswordPage from "./pages/ForgotPassword";
 import VerificationCodePage from "./pages/VerificationCode";
 import ResetPasswordPage from "./pages/ResetPassword";
 import ChangePasswordPage from "./pages/ChangePassword";
+import LogoutPage from "./pages/Logout";
 
 function App() {
     const dispatch = useDispatch();
@@ -21,6 +26,7 @@ function App() {
 
     useLayoutEffect(() => {
         dispatch(setPageList(customerListItems));
+        dispatch(setUserPageList(userListItems));
     }, [dispatch]);
 
     useLayoutEffect(() => {
@@ -33,6 +39,7 @@ function App() {
         <div className="App">
             <Routes>
                 <Route exact path="/login" element={<LoginPage />} />
+                <Route exact path="/logout" element={<LogoutPage />} />
                 <Route
                     exact
                     path="/"

@@ -7,8 +7,10 @@ import {
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-function ControlledAccordion({ title, children }) {
-    const [expanded, setExpanded] = useState(true);
+function ControlledAccordion({ title, defaultExpanded, children }) {
+    const [expanded, setExpanded] = useState(
+        defaultExpanded ? defaultExpanded : false
+    );
     const handleChange = (event) => {
         setExpanded(!expanded);
     };

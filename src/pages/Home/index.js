@@ -4,7 +4,7 @@ import AccountCard from "../../components/AccountCard/index.js";
 
 export default function HomePage() {
     return (
-        <ControlledAccordion title="Tài khoản thanh toán">
+        <ControlledAccordion title="Tài khoản thanh toán" defaultExpanded>
             <Grid container spacing={2}>
                 <Grid item xs={4}>
                     <AccountCard
