@@ -11,36 +11,28 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import PaymentFormDialog from "../PaymentFormDialog";
+import PaymentRequestCancelFormDialog from "../PaymentRequestCancelFormDialog";
 
 const columns = [
-    { id: "name", label: "Name", minWidth: 170 },
-    { id: "code", label: "ISO\u00a0Code", minWidth: 100 },
+    { id: "datetime", label: "Ngày", minWidth: 50 },
+    { id: "name", label: "Tên người nhắc nợ", minWidth: 170 },
+    { id: "accountNumber", label: "Số tài khoản", minWidth: 100 },
     {
-        id: "population",
-        label: "Population",
+        id: "memoInformation",
+        label: "Nội dung nhắc nợ",
         minWidth: 170,
-        align: "right",
-        format: (value) => value.toLocaleString("en-US"),
     },
+    { id: "status", label: "Trạng thái", minWidth: 50 },
     {
-        id: "size",
-        label: "Size\u00a0(km\u00b2)",
-        minWidth: 170,
-        align: "right",
-        format: (value) => value.toLocaleString("en-US"),
-    },
-    {
-        id: "density",
-        label: "Density",
-        minWidth: 170,
-        align: "right",
-        format: (value) => value.toFixed(2),
+        id: "actions",
+        label: "Thao tác",
+        minWidth: 50,
     },
 ];
 
-function createData(name, code, population, size) {
-    const density = population / size;
-    return { name, code, population, size, density };
+function createData(name, accountNumber, memoInformation) {
+    return { name, accountNumber, memoInformation };
 }
 
 const rows = [
@@ -105,9 +97,20 @@ function DebtList() {
                                         hover
                                         role="checkbox"
                                         tabIndex={-1}
-                                        key={row.code}
+                                        key={row.accountNumber}
                                     >
                                         {columns.map((column) => {
+                                            if (column.id === "actions") {
+                                                return (
+                                                    <TableCell
+                                                        key={column.id}
+                                                        align={column.align}
+                                                    >
+                                                        <PaymentFormDialog />
+                                                        <PaymentRequestCancelFormDialog></PaymentRequestCancelFormDialog>
+                                                    </TableCell>
+                                                );
+                                            }
                                             const value = row[column.id];
                                             return (
                                                 <TableCell

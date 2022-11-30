@@ -12,10 +12,7 @@ function PaymentRequestPage(props) {
                 <ControlledAccordion title="Danh sách nhắc nợ" defaultExpanded>
                     <PaymentRequestList></PaymentRequestList>
                 </ControlledAccordion>
-                <ControlledAccordion
-                    title="Danh sách nợ chưa thanh toán"
-                    defaultExpanded
-                >
+                <ControlledAccordion title="Danh sách nợ" defaultExpanded>
                     <DebtList></DebtList>
                 </ControlledAccordion>
             </Box>

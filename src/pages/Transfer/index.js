@@ -2,7 +2,6 @@ import {
     Button,
     Box,
     TextField,
-    Paper,
     Select,
     MenuItem,
     FormControl,
@@ -38,12 +37,11 @@ function InternalTransferForm(props) {
                 noValidate
                 sx={{ mt: 1 }}
             >
-                <FormControl fullWidth>
+                <FormControl fullWidth required>
                     <InputLabel id="demo-simple-select-label">
                         Tài khoản nguồn
                     </InputLabel>
                     <Select
-                        required
                         fullWidth
                         labelId="from-account-select-label"
                         id="from-account"

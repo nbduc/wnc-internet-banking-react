@@ -7,40 +7,35 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import PaymentRequestCancelFormDialog from "../PaymentRequestCancelFormDialog";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
 const columns = [
-    { id: "name", label: "Name", minWidth: 170 },
-    { id: "code", label: "ISO\u00a0Code", minWidth: 100 },
+    { id: "datetime", label: "Ngày", minWidth: 50 },
+    { id: "name", label: "Tên người nợ", minWidth: 170 },
+    { id: "accountNumber", label: "Số tài khoản", minWidth: 100 },
     {
-        id: "population",
-        label: "Population",
-        minWidth: 170,
-        align: "right",
-        format: (value) => value.toLocaleString("en-US"),
+        id: "memoInformation",
+        label: "Nội dung nhắc nợ",
+        minWidth: 200,
     },
     {
-        id: "size",
-        label: "Size\u00a0(km\u00b2)",
-        minWidth: 170,
-        align: "right",
-        format: (value) => value.toLocaleString("en-US"),
+        id: "status",
+        label: "Trạng thái",
+        minWidth: 50,
     },
     {
-        id: "density",
-        label: "Density",
-        minWidth: 170,
-        align: "right",
-        format: (value) => value.toFixed(2),
+        id: "actions",
+        label: "Thao tác",
+        minWidth: 50,
     },
 ];
 
-function createData(name, code, population, size) {
-    const density = population / size;
-    return { name, code, population, size, density };
+function createData(name, accountNumber, memoInformation, status) {
+    return { name, accountNumber, memoInformation, status };
 }
 
 const rows = [
@@ -105,9 +100,19 @@ function PaymentRequestList() {
                                         hover
                                         role="checkbox"
                                         tabIndex={-1}
-                                        key={row.code}
+                                        key={row.accountNumber}
                                     >
                                         {columns.map((column) => {
+                                            if (column.id === "actions") {
+                                                return (
+                                                    <TableCell
+                                                        key={column.id}
+                                                        align={column.align}
+                                                    >
+                                                        <PaymentRequestCancelFormDialog></PaymentRequestCancelFormDialog>
+                                                    </TableCell>
+                                                );
+                                            }
                                             const value = row[column.id];
                                             return (
                                                 <TableCell

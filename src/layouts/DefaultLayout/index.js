@@ -10,11 +10,11 @@ import Container from "@mui/material/Container";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import PersonIcon from "@mui/icons-material/Person";
 import AppBar from "../../components/AppBar";
 import Drawer from "../../components/Drawer";
 import Footer from "../../components/Footer";
 import NavItems from "../../components/NavItems";
+import UserActions from "../../components/UserActions";
 import { useSelector } from "react-redux";
 
 function DefaultLayout({ children }) {
@@ -56,9 +56,7 @@ function DefaultLayout({ children }) {
                             <NotificationsIcon />
                         </Badge>
                     </IconButton>
-                    <IconButton color="inherit">
-                        <PersonIcon />
-                    </IconButton>
+                    <UserActions></UserActions>
                 </Toolbar>
             </AppBar>
             <Drawer variant="permanent" open={open}>
