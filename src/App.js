@@ -1,6 +1,6 @@
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { customerListItems, userListItems } from "./common";
+import { customerListItems, adminListItems, userListItems } from "./common";
 import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
 import {
@@ -19,18 +19,23 @@ import VerificationCodePage from "./pages/VerificationCode";
 import ResetPasswordPage from "./pages/ResetPassword";
 import ChangePasswordPage from "./pages/ChangePassword";
 import LogoutPage from "./pages/Logout";
+import CreateAccountPage from "./pages/CreateAccount";
+import DirectDepositPage from "./pages/DirectDeposit";
+import TransactionHistoryPage from "./pages/TransactionHistory";
+import EmployeeManagementPage from "./pages/EmployeeManagment";
+import PartnerTransactionHistoryPage from "./pages/PartnerTransactionHistory";
 
 function App() {
     const dispatch = useDispatch();
     const location = useLocation();
 
     useLayoutEffect(() => {
-        dispatch(setPageList(customerListItems));
+        dispatch(setPageList(adminListItems));
         dispatch(setUserPageList(userListItems));
     }, [dispatch]);
 
     useLayoutEffect(() => {
-        const activePageIndex = customerListItems.findIndex((item) => {
+        const activePageIndex = adminListItems.findIndex((item) => {
             return location.pathname === item.link;
         });
         dispatch(setActivePage(activePageIndex));
@@ -96,6 +101,53 @@ function App() {
                     exact
                     path="/change-password"
                     element={<ChangePasswordPage />}
+                />
+
+                <Route
+                    exact
+                    path="/create-account"
+                    element={
+                        <DefaultLayout>
+                            <CreateAccountPage />
+                        </DefaultLayout>
+                    }
+                />
+                <Route
+                    exact
+                    path="/direct-deposit"
+                    element={
+                        <DefaultLayout>
+                            <DirectDepositPage />
+                        </DefaultLayout>
+                    }
+                />
+                <Route
+                    exact
+                    path="/transaction-history"
+                    element={
+                        <DefaultLayout>
+                            <TransactionHistoryPage />
+                        </DefaultLayout>
+                    }
+                />
+
+                <Route
+                    exact
+                    path="/employee-management"
+                    element={
+                        <DefaultLayout>
+                            <EmployeeManagementPage />
+                        </DefaultLayout>
+                    }
+                />
+                <Route
+                    exact
+                    path="/partner-transaction-history"
+                    element={
+                        <DefaultLayout>
+                            <PartnerTransactionHistoryPage />
+                        </DefaultLayout>
+                    }
                 />
             </Routes>
         </div>

@@ -7,52 +7,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-
-import List from "@mui/material/List";
-import ListItemButton from "@mui/material/ListItemButton";
-import ListItemText from "@mui/material/ListItemText";
-import Divider from "@mui/material/Divider";
-
-function DebtorListDialog() {
-    const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-        setOpen(true);
-    };
-
-    const handleClose = (event, reason) => {
-        setOpen(false);
-    };
-
-    return (
-        <div>
-            <Button onClick={handleClickOpen}>Chọn từ danh sách</Button>
-            <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Danh sách người nợ</DialogTitle>
-                <DialogContent>
-                    <List>
-                        <ListItemButton>
-                            <ListItemText
-                                primary="Người nợ"
-                                secondary="Số tài khoản"
-                            />
-                        </ListItemButton>
-                        <Divider />
-                        <ListItemButton>
-                            <ListItemText
-                                primary="Người nợ"
-                                secondary="Số tài khoản"
-                            />
-                        </ListItemButton>
-                    </List>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Trở về</Button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    );
-}
+import AccountListDialog from "../AccountListDialog";
 
 function PaymentRequestFormDialog() {
     const [open, setOpen] = React.useState(false);
@@ -90,7 +45,7 @@ function PaymentRequestFormDialog() {
                             id="account-number"
                             autoComplete="account-number"
                         />
-                        <DebtorListDialog></DebtorListDialog>
+                        <AccountListDialog></AccountListDialog>
                         <TextField
                             margin="normal"
                             fullWidth
