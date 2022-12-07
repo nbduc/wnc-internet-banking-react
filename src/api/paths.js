@@ -1,6 +1,9 @@
 const paths = {
-    login: "/api/auth/login",
-    logout: "/api/auth/logout",
+    auth: {
+        login: "/api/auths",
+        refreshToken: "/api/auths/refresh-token",
+        revokeToken: "/api/auths/revoke-token",
+    },
 };
 
 export default paths;

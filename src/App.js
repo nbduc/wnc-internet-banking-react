@@ -1,8 +1,14 @@
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
-import { customerListItems, adminListItems, userListItems } from "./common";
+import {
+    customerListItems,
+    adminListItems,
+    employeeListItems,
+    userListItems,
+} from "./common";
 import { useDispatch } from "react-redux";
 import { useLayoutEffect } from "react";
+import jwt from "jwt-decode";
 import {
     setActivePage,
     setPageList,
@@ -24,18 +30,27 @@ import DirectDepositPage from "./pages/DirectDeposit";
 import TransactionHistoryPage from "./pages/TransactionHistory";
 import EmployeeManagementPage from "./pages/EmployeeManagment";
 import PartnerTransactionHistoryPage from "./pages/PartnerTransactionHistory";
+import RequireAuth from "./components/RequireAuth";
+import Unauthorized from "./pages/Unauthorized";
+import { ROLES } from "./common";
 
 function App() {
     const dispatch = useDispatch();
     const location = useLocation();
 
+    // useLayoutEffect(() => {
+    //     const token = localStorage.getItem("token");
+    //     const user = jwt(token);
+    //     console.log(user);
+    // }, []);
+
     useLayoutEffect(() => {
-        dispatch(setPageList(adminListItems));
+        dispatch(setPageList(employeeListItems));
         dispatch(setUserPageList(userListItems));
     }, [dispatch]);
 
     useLayoutEffect(() => {
-        const activePageIndex = adminListItems.findIndex((item) => {
+        const activePageIndex = employeeListItems.findIndex((item) => {
             return location.pathname === item.link;
         });
         dispatch(setActivePage(activePageIndex));
@@ -43,17 +58,9 @@ function App() {
     return (
         <div className="App">
             <Routes>
+                {/* public routes */}
                 <Route exact path="/login" element={<LoginPage />} />
                 <Route exact path="/logout" element={<LogoutPage />} />
-                <Route
-                    exact
-                    path="/"
-                    element={
-                        <DefaultLayout>
-                            <HomePage />
-                        </DefaultLayout>
-                    }
-                />
                 <Route
                     exact
                     path="/forgot-password"
@@ -69,86 +76,106 @@ function App() {
                     path="/reset-password"
                     element={<ResetPasswordPage />}
                 />
-                <Route
-                    exact
-                    path="/recipients"
-                    element={
-                        <DefaultLayout>
-                            <RecipientPage />
-                        </DefaultLayout>
-                    }
-                />
-                <Route
-                    exact
-                    path="/transfer"
-                    element={
-                        <DefaultLayout>
-                            <TransferPage />
-                        </DefaultLayout>
-                    }
-                />
+                <Route exact path="/unauthorized" element={<Unauthorized />} />
+                
+                {/* private routes */}
+                <Route element={<RequireAuth />}>
+                    <Route
+                        exact
+                        path="/change-password"
+                        element={<ChangePasswordPage />}
+                    />
+                </Route>
 
-                <Route
-                    exact
-                    path="/payment-requests"
-                    element={
-                        <DefaultLayout>
-                            <PaymentRequestPage />
-                        </DefaultLayout>
-                    }
-                />
-                <Route
-                    exact
-                    path="/change-password"
-                    element={<ChangePasswordPage />}
-                />
-
-                <Route
-                    exact
-                    path="/create-account"
-                    element={
-                        <DefaultLayout>
-                            <CreateAccountPage />
-                        </DefaultLayout>
-                    }
-                />
-                <Route
-                    exact
-                    path="/direct-deposit"
-                    element={
-                        <DefaultLayout>
-                            <DirectDepositPage />
-                        </DefaultLayout>
-                    }
-                />
-                <Route
-                    exact
-                    path="/transaction-history"
-                    element={
-                        <DefaultLayout>
-                            <TransactionHistoryPage />
-                        </DefaultLayout>
-                    }
-                />
-
-                <Route
-                    exact
-                    path="/employee-management"
-                    element={
-                        <DefaultLayout>
-                            <EmployeeManagementPage />
-                        </DefaultLayout>
-                    }
-                />
-                <Route
-                    exact
-                    path="/partner-transaction-history"
-                    element={
-                        <DefaultLayout>
-                            <PartnerTransactionHistoryPage />
-                        </DefaultLayout>
-                    }
-                />
+                <Route element={<RequireAuth allowedRoles={"user"}/>}>
+                    <Route
+                        exact
+                        path="/"
+                        element={
+                            <DefaultLayout>
+                                <HomePage />
+                            </DefaultLayout>
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/recipients"
+                        element={
+                            <DefaultLayout>
+                                <RecipientPage />
+                            </DefaultLayout>
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/transfer"
+                        element={
+                            <DefaultLayout>
+                                <TransferPage />
+                            </DefaultLayout>
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/payment-requests"
+                        element={
+                            <DefaultLayout>
+                                <PaymentRequestPage />
+                            </DefaultLayout>
+                        }
+                    />
+                </Route>
+                
+                <Route element={<RequireAuth allowedRoles={"employee"}/>}>
+                    <Route
+                        exact
+                        path="/create-account"
+                        element={
+                            <DefaultLayout>
+                                <CreateAccountPage />
+                            </DefaultLayout>
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/direct-deposit"
+                        element={
+                            <DefaultLayout>
+                                <DirectDepositPage />
+                            </DefaultLayout>
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/transaction-history"
+                        element={
+                            <DefaultLayout>
+                                <TransactionHistoryPage />
+                            </DefaultLayout>
+                        }
+                    />
+                </Route>
+                <Route element={<RequireAuth allowedRoles={"admin"}/>}>
+                    <Route
+                        exact
+                        path="/employee-management"
+                        element={
+                            <DefaultLayout>
+                                <EmployeeManagementPage />
+                            </DefaultLayout>
+                        }
+                    />
+                    <Route
+                        exact
+                        path="/partner-transaction-history"
+                        element={
+                            <DefaultLayout>
+                                <PartnerTransactionHistoryPage />
+                            </DefaultLayout>
+                        }
+                    />
+                </Route>
+                
             </Routes>
         </div>
     );

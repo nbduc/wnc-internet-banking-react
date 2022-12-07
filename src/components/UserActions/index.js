@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 function UserActions() {
     const navigate = useNavigate();
-    const { name } = useSelector((state) => state.auth.currentUser);
+    const currentUser = useSelector((state) => state.auth.currentUser);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const actionListOpen = Boolean(anchorEl);
@@ -35,7 +35,7 @@ function UserActions() {
                     "aria-labelledby": "user-actions-button",
                 }}
             >
-                <MenuItem divider>{name}</MenuItem>
+                <MenuItem divider>{currentUser?.email}</MenuItem>
                 {userListItems.map((item, idx) => {
                     return (
                         <MenuItem

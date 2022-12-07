@@ -14,9 +14,10 @@ import { Link as RouterLink } from "react-router-dom";
 import Footer from "../../components/Footer";
 import { userLoginFetch } from "../../features/Auth/authSlice";
 import store from "../../app/store";
-import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
+import ReCAPTCHA from "react-google-recaptcha";
 
 function MessageAlert({ message, hidden }) {
     const [open, setOpen] = useState(!hidden);
@@ -49,32 +50,53 @@ function MessageAlert({ message, hidden }) {
 }
 
 function LoginPage(props) {
-    const { isLoggedIn, isLoggingIn, loginMessage } = useSelector(
+    const { isLoggedIn, isLoggingIn, errMsg } = useSelector(
         (state) => state.auth
     );
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [checked, setChecked] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+    const from = location.state?.from?.pathname || "/";
+    
+    const captchaRef = useRef(null);
+
+    const canSubmit = email && password && checked;
 
     //already logged in
     useEffect(() => {
         if (isLoggedIn) {
-            navigate("/");
+            navigate(from, {replace: true});
         }
     }, [navigate, isLoggedIn]);
 
+    const handleEmailChange = (event) => {
+        setEmail(event.target.value);
+    }
+
+    const handlePasswordChange = (event) => {
+        setPassword(event.target.value);
+    }
+
+    const handleReCaptchaChange = () => {
+        setChecked(true);
+    }
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const loginData = {
-            username: data.get("username"),
-            password: data.get("password"),
-        };
-        store.dispatch(userLoginFetch(loginData));
+
+        const reCaptchaToken = captchaRef.current?.getValue();
+        captchaRef.current.reset();
+        setChecked(false);
+
+        store.dispatch(userLoginFetch({email, password, reCaptchaToken}));
     };
     return (
         <>
-            {!isLoggedIn && loginMessage.length !== 0 && (
+            {!isLoggedIn && errMsg.length !== 0 && (
                 <MessageAlert
-                    message={loginMessage}
+                    message={errMsg}
                     hidden={isLoggedIn}
                 ></MessageAlert>
             )}
@@ -112,11 +134,13 @@ function LoginPage(props) {
                                 margin="normal"
                                 required
                                 fullWidth
-                                id="username"
-                                label="Tên đăng nhập"
-                                name="username"
-                                autoComplete="username"
+                                id="email"
+                                label="Email"
+                                name="email"
+                                autoComplete="email"
                                 autoFocus
+                                value={email}
+                                onChange={handleEmailChange}
                             />
                             <TextField
                                 margin="normal"
@@ -126,14 +150,18 @@ function LoginPage(props) {
                                 label="Mật khẩu"
                                 type="password"
                                 id="password"
-                                autoComplete="current-password"
+                                autoComplete="password"
+                                value={password}
+                                onChange={handlePasswordChange}
                             />
+                            <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} onChange={handleReCaptchaChange} ref={captchaRef} />
                             <LoadingButton
                                 type="submit"
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
                                 loading={isLoggingIn}
+                                disabled={!canSubmit}
                             >
                                 Đăng nhập
                             </LoadingButton>

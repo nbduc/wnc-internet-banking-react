@@ -79,7 +79,7 @@ export const userListItems = [
 
 export const drawerWidth = 340;
 
-export const roles = {
+export const ROLES = {
     admin: "admin",
     customer: "customer",
     employee: "employee",
