@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import authApi from "../../api/authApi";
+import { ROLES } from "../../common";
 
 const userLoginFetch = createAsyncThunk(
     "auth/userLoginFetch",
     async ({ email, password, reCaptchaToken }, { rejectWithValue }) => {
         try {
             const response = await authApi.login(email, password, reCaptchaToken);
-            console.log(response);
             return response;
         } catch (error) {
             if (!error.response) {
@@ -18,7 +18,10 @@ const userLoginFetch = createAsyncThunk(
 );
 
 const initialState = {
-    currentUser: null,
+    currentUser: {
+        email: "",
+        roles: ""
+    },
     accessToken: null,
     isLoggingIn: false,
     isLoggedIn: false,
@@ -47,9 +50,9 @@ const authSlice = createSlice({
                 state.errMsg = "";
             })
             .addCase(userLoginFetch.fulfilled, (state, action) => {
-                const { token, email } = action.payload;
-                localStorage.setItem("token", token);
-                state.currentUser = { email };
+                const { token, email, role } = action.payload;
+                state.currentUser = { email, role: role || ROLES.customer };
+                state.accessToken = token;
                 state.isLoggedIn = true;
                 state.isLoggingIn = false;
                 state.errMsg = "";

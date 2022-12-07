@@ -2,7 +2,7 @@ import axios from "axios";
 import queryString from "query-string";
 
 // axios public
-export default axios.create({
+const axiosClient = axios.create({
     baseURL: process.env.REACT_APP_BASE_URL,
     headers: {
         "Content-Type": "application/json",
@@ -14,16 +14,20 @@ export default axios.create({
     },
 });
 
-// axios private
-export const axiosPrivate = axios.create({
-    baseURL: process.env.REACT_APP_BASE_URL,
-    headers: {
-        "Content-Type": "application/json",
+axiosClient.interceptors.request.use(
+    config => config,
+    error => Promise.reject(error)
+);
+
+axiosClient.interceptors.response.use(
+    response => {
+        if (response && response.data) {
+            return response.data;
+        }
+        return response;
     },
-    withCredentials: true,
-    paramsSerializer: {
-        encode: (params) => {
-            queryString.stringify(params);
-        },
-    },
-});
+    error => Promise.reject(error)
+);
+
+export default axiosClient;
+

@@ -5,7 +5,7 @@ function RequireAuth({allowedRoles}) {
     const location = useLocation();
     const currentUser = useSelector(state => state.auth.currentUser);
     return (
-        currentUser?.role?.find(role => allowedRoles?.includes(role)) || !allowedRoles
+        allowedRoles?.includes(currentUser?.role) || !allowedRoles
             ? <Outlet />
             : currentUser?.email
                 ? <Navigate to="/unauthorized" state={{from: location}} replace />

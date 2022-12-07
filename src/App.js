@@ -87,7 +87,7 @@ function App() {
                     />
                 </Route>
 
-                <Route element={<RequireAuth allowedRoles={"user"}/>}>
+                <Route element={<RequireAuth allowedRoles={"customer"}/>}>
                     <Route
                         exact
                         path="/"
