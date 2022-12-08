@@ -58,7 +58,6 @@ function LoginPage(props) {
     const [checked, setChecked] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
-    const from = location.state?.from?.pathname || "/";
     
     const captchaRef = useRef(null);
 
@@ -66,20 +65,22 @@ function LoginPage(props) {
 
     //already logged in
     useEffect(() => {
+        const from = location.state?.from?.pathname || "/";
+        console.log(isLoggedIn);
         if (isLoggedIn) {
             navigate(from, {replace: true});
         }
-    }, [navigate, isLoggedIn]);
+    }, [navigate, location, isLoggedIn]);
 
-    const handleEmailChange = (event) => {
+    const handleEmailInput = (event) => {
         setEmail(event.target.value);
     }
 
-    const handlePasswordChange = (event) => {
+    const handlePasswordInput = (event) => {
         setPassword(event.target.value);
     }
 
-    const handleReCaptchaChange = () => {
+    const handleReCaptcha = () => {
         setChecked(true);
     }
 
@@ -140,7 +141,7 @@ function LoginPage(props) {
                                 autoComplete="email"
                                 autoFocus
                                 value={email}
-                                onChange={handleEmailChange}
+                                onChange={handleEmailInput}
                             />
                             <TextField
                                 margin="normal"
@@ -152,9 +153,9 @@ function LoginPage(props) {
                                 id="password"
                                 autoComplete="password"
                                 value={password}
-                                onChange={handlePasswordChange}
+                                onChange={handlePasswordInput}
                             />
-                            <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} onChange={handleReCaptchaChange} ref={captchaRef} />
+                            <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} onChange={handleReCaptcha} ref={captchaRef} />
                             <LoadingButton
                                 type="submit"
                                 fullWidth

@@ -7,14 +7,37 @@ import {
     Container,
 } from "@mui/material";
 import Footer from "../../components/Footer";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
 
 function ChangePasswordPage(props) {
+    const [currentPassword, setCurrentPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleCurrentPasswordInput = (event) => {
+        setCurrentPassword(event.target.value);
+    }
+    const handleNewPasswordInput = (event) => {
+        setNewPassword(event.target.value);
+    }
+    const handleConfirmPasswordInput = (event) => {
+        setConfirmPassword(event.target.value);
+    }
+
+    const canSubmit = currentPassword && newPassword && confirmPassword;
+
     const handleSubmit = (event) => {
         event.preventDefault();
-        navigate("/");
     };
+
+    const from = location.state?.from?.pathname || "/";
+
+    const handleBackButton = (event) => {
+        navigate(from);
+    }
     return (
         <Box
             sx={{
@@ -53,6 +76,8 @@ function ChangePasswordPage(props) {
                             id="current-password"
                             autoComplete="current-password"
                             autoFocus
+                            value={currentPassword}
+                            onChange={handleCurrentPasswordInput}
                         />
                         <TextField
                             margin="normal"
@@ -63,6 +88,8 @@ function ChangePasswordPage(props) {
                             type="password"
                             id="new-password"
                             autoComplete="new-password"
+                            value={newPassword}
+                            onChange={handleNewPasswordInput}
                         />
                         <TextField
                             margin="normal"
@@ -73,16 +100,27 @@ function ChangePasswordPage(props) {
                             type="password"
                             id="confirm-password"
                             autoComplete="confirm-password"
+                            value={confirmPassword}
+                            onChange={handleConfirmPasswordInput}
                         />
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
                             sx={{ mt: 3, mb: 2 }}
+                            disabled={!canSubmit}
                         >
                             Thay đổi
                         </Button>
                     </Box>
+                    <Button
+                        fullWidth
+                        variant="outlined"
+                        sx={{ mt: 3, mb: 2 }}
+                        onClick={handleBackButton}
+                    >
+                        Trở về
+                    </Button>
                 </Box>
             </Container>
             <Footer></Footer>

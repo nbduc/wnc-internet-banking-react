@@ -19,8 +19,8 @@ const userLoginFetch = createAsyncThunk(
 
 const initialState = {
     currentUser: {
-        email: "",
-        roles: ""
+        email: null,
+        roles: null
     },
     accessToken: null,
     isLoggingIn: false,
@@ -32,9 +32,7 @@ const authSlice = createSlice({
     name: "auth",
     initialState,
     reducers: {
-        userLogout: (state) => {
-            state = initialState;
-        },
+        userLogout: (state) => initialState,
         setCurrentUser: (state, action) => {
             state.currentUser = action.payload;
         },

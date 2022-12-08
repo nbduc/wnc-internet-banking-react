@@ -1,17 +1,13 @@
 import "./App.css";
 import { Routes, Route, useLocation } from "react-router-dom";
 import {
-    customerListItems,
-    adminListItems,
-    employeeListItems,
+    ROLES,
     userListItems,
 } from "./common";
-import { useDispatch } from "react-redux";
-import { useLayoutEffect } from "react";
-import jwt from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
 import {
     setActivePage,
-    setPageList,
     setUserPageList,
 } from "./features/Page/pageSlice";
 import LoginPage from "./pages/Login";
@@ -32,29 +28,22 @@ import EmployeeManagementPage from "./pages/EmployeeManagment";
 import PartnerTransactionHistoryPage from "./pages/PartnerTransactionHistory";
 import RequireAuth from "./components/RequireAuth";
 import Unauthorized from "./pages/Unauthorized";
-import { ROLES } from "./common";
 
 function App() {
     const dispatch = useDispatch();
     const location = useLocation();
+    const pageListItems = useSelector(state => state.pageList.items);
 
-    // useLayoutEffect(() => {
-    //     const token = localStorage.getItem("token");
-    //     const user = jwt(token);
-    //     console.log(user);
-    // }, []);
-
-    useLayoutEffect(() => {
-        dispatch(setPageList(employeeListItems));
+    useEffect(() => {
         dispatch(setUserPageList(userListItems));
     }, [dispatch]);
 
-    useLayoutEffect(() => {
-        const activePageIndex = employeeListItems.findIndex((item) => {
+    useEffect(() => {
+        const activePageIndex = pageListItems.findIndex((item) => {
             return location.pathname === item.link;
         });
         dispatch(setActivePage(activePageIndex));
-    }, [dispatch, location]);
+    }, [dispatch, location, pageListItems]);
     return (
         <div className="App">
             <Routes>
@@ -87,7 +76,7 @@ function App() {
                     />
                 </Route>
 
-                <Route element={<RequireAuth allowedRoles={"customer"}/>}>
+                <Route element={<RequireAuth allowedRoles={ROLES.customer}/>}>
                     <Route
                         exact
                         path="/"
@@ -126,7 +115,7 @@ function App() {
                     />
                 </Route>
                 
-                <Route element={<RequireAuth allowedRoles={"employee"}/>}>
+                <Route element={<RequireAuth allowedRoles={ROLES.employee}/>}>
                     <Route
                         exact
                         path="/create-account"
@@ -155,7 +144,7 @@ function App() {
                         }
                     />
                 </Route>
-                <Route element={<RequireAuth allowedRoles={"admin"}/>}>
+                <Route element={<RequireAuth allowedRoles={ROLES.admin}/>}>
                     <Route
                         exact
                         path="/employee-management"

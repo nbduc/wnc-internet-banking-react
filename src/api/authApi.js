@@ -1,9 +1,8 @@
 import axiosClient from "./axiosClient";
-import paths from "./paths";
 
 const authApi = {
     login: async (email, password, reCaptchaToken) => {
-        return axiosClient.post(paths.auth.login, { email, password, reCaptchaToken });
+        return axiosClient.post("/api/auths", { email, password, reCaptchaToken });
     },
 };
 

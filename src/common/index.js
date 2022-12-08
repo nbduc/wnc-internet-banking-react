@@ -80,7 +80,7 @@ export const userListItems = [
 export const drawerWidth = 340;
 
 export const ROLES = {
-    admin: "admin",
-    customer: "customer",
-    employee: "employee",
+    admin: "Admin",
+    customer: "Customer",
+    employee: "Employee",
 };
