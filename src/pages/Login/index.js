@@ -5,57 +5,25 @@ import {
     Typography,
     Container,
     Link,
-    Snackbar,
-    Alert,
-    AlertTitle,
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Link as RouterLink } from "react-router-dom";
 import Footer from "../../components/Footer";
-import { userLoginFetch } from "../../features/Auth/authSlice";
-import store from "../../app/store";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState, useRef } from "react";
-import { useSelector } from "react-redux";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useLoginMutation } from "../../features/Auth/authApiSlice";
+import MessageAlert from "../../components/MessageAlert";
 
-function MessageAlert({ message, hidden }) {
-    const [open, setOpen] = useState(!hidden);
-
-    const handleClose = (event, reason) => {
-        if (reason === "clickaway") {
-            return;
-        }
-
-        setOpen(false);
-    };
-
-    return (
-        <Snackbar
-            open={open}
-            autoHideDuration={6000}
-            anchorOrigin={{ vertical: "top", horizontal: "right" }}
-            onClose={handleClose}
-        >
-            <Alert
-                onClose={handleClose}
-                severity="error"
-                sx={{ width: "100%" }}
-            >
-                <AlertTitle>Lỗi</AlertTitle>
-                {message}
-            </Alert>
-        </Snackbar>
-    );
-}
 
 function LoginPage(props) {
-    const { isLoggedIn, isLoggingIn, errMsg } = useSelector(
-        (state) => state.auth
-    );
+    const [login, { isLoading: isLoggingIn }] = useLoginMutation();
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [checked, setChecked] = useState(false);
+    const [errMsg, setErrMsg] = useState('');
+
     const navigate = useNavigate();
     const location = useLocation();
     
@@ -66,7 +34,6 @@ function LoginPage(props) {
     //already logged in
     useEffect(() => {
         const from = location.state?.from?.pathname || "/";
-        console.log(isLoggedIn);
         if (isLoggedIn) {
             navigate(from, {replace: true});
         }
@@ -84,14 +51,27 @@ function LoginPage(props) {
         setChecked(true);
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
 
         const reCaptchaToken = captchaRef.current?.getValue();
         captchaRef.current.reset();
-        setChecked(false);
 
-        store.dispatch(userLoginFetch({email, password, reCaptchaToken}));
+        //data and error
+        try {
+            setEmail('');
+            setPassword('');
+            setErrMsg('');
+            setChecked(false);
+            await login({ email, password, reCaptchaToken }).unwrap();
+            setIsLoggedIn(true);
+        } catch (err) {
+            if (!err?.status) {
+                setErrMsg('Máy chủ không phản hồi');
+            } else {
+                setErrMsg('Đăng nhập không thành công');
+            }
+        }
     };
     return (
         <>
@@ -99,6 +79,7 @@ function LoginPage(props) {
                 <MessageAlert
                     message={errMsg}
                     hidden={isLoggedIn}
+                    severity="error"
                 ></MessageAlert>
             )}
             <Box

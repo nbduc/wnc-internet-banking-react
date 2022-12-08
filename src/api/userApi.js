@@ -1,8 +1,8 @@
 import axiosPrivate from "./axiosPrivate";
 
 const userApi = {
-    changePassword: async (email, oldPassword, newPassword) => {
-        return axiosPrivate.post("/api/users/change-password", { email, oldPassword, newPassword });
+    changePassword: async ( oldPassword, newPassword, confirmPassword ) => {
+        return axiosPrivate.post("/api/users/change-password", { oldPassword, newPassword, confirmPassword });
     },
 };
 

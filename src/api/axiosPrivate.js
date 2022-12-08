@@ -1,9 +1,11 @@
 import axios from "axios";
 import axiosClient from "./axiosClient";
 import queryString from "query-string";
+import { useSelector } from "react-redux";
+import { setAccessToken } from "../features/Auth/authSlice";
 
 const refresh = async () => {
-    const response = axiosClient.get(paths.auth.refreshToken, {
+    const response = axiosClient.get("api/auths/refresh-token", {
         withCredentials: true,
     });
     setAccessToken(response?.token);
@@ -24,15 +26,15 @@ const axiosPrivate = axios.create({
     },
 });
 
-axiosPrivate.interceptors.request.use(
-    config => {
-        if (!config.headers['Authorization']) {
-            config.headers['Authorization'] = `Bear ${accessToken}`
-        }
-        return config;
-    },
-    error => Promise.reject(error)
-);
+// axiosPrivate.interceptors.request.use(
+//     config => {
+//         if (!config.headers['Authorization']) {
+//             config.headers['Authorization'] = `Bear ${accessToken}`
+//         }
+//         return config;
+//     },
+//     error => Promise.reject(error)
+// );
 
 axiosPrivate.interceptors.response.use(
     response => {

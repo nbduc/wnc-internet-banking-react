@@ -1,14 +1,14 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { userLogout } from "../../features/Auth/authSlice";
+import { logout } from "../../features/Auth/authSlice";
 
 function LogoutPage() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(userLogout());
+        dispatch(logout());
         navigate("/login", { replace: true });
     });
 

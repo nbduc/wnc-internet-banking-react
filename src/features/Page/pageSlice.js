@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { authApiSlice } from "../Auth/authApiSlice";
 import { ROLES } from "../../common";
 import {
     customerListItems,
@@ -27,7 +28,7 @@ const pageSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        builder.addCase('auth/userLoginFetch/fulfilled', (state, action) => {
+        builder.addMatcher(authApiSlice.endpoints.login.matchFulfilled, (state, action) => {
             const { role } = action.payload;
             switch (role) {
                 case ROLES.customer:
