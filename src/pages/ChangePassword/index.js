@@ -14,12 +14,11 @@ import { useChangePasswordMutation } from "../../features/User/userApiSlice";
 import MessageAlert from "../../components/MessageAlert";
 
 function ChangePasswordPage(props) {
-    const [changePassword, {isLoading}] = useChangePasswordMutation();
+    const [changePassword, {isLoading, isSuccess}] = useChangePasswordMutation();
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [msg, setMsg] = useState('');
-    const [isSucessful, setIsSuccessful] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -36,13 +35,21 @@ function ChangePasswordPage(props) {
 
     const canSubmit = currentPassword && newPassword && confirmPassword;
 
+    const resetStates = () => {
+        setCurrentPassword('');
+        setNewPassword('');
+        setConfirmPassword('');
+        setMsg('');
+    }
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
             await changePassword({ oldPassword: currentPassword, newPassword, confirmPassword });
-            setIsSuccessful(true);
+            resetStates()
             setMsg('Đổi mật khẩu thành công.');
         } catch (err) {
+            resetStates();
             if (!err?.status) {
                 setMsg("Không thể kết nối đến máy chủ.");
             } else if(err?.status){
@@ -63,8 +70,8 @@ function ChangePasswordPage(props) {
             {msg.length !== 0 && (
                 <MessageAlert
                     message={msg}
-                    hidden={isSucessful}
-                    severity={isSucessful? "success" : "error"}
+                    hidden={false}
+                    severity={isSuccess? "success" : "error"}
                 ></MessageAlert>
             )}
             <Box
