@@ -28,22 +28,39 @@ const pageSlice = createSlice({
         },
     },
     extraReducers: builder => {
-        builder.addMatcher(authApiSlice.endpoints.login.matchFulfilled, (state, action) => {
-            const { role } = action.payload;
-            switch (role) {
-                case ROLES.customer:
-                    state.items = customerListItems;
-                    break;
-                case ROLES.employee:
-                    state.items = employeeListItems;
-                    break;
-                case ROLES.admin:
-                    state.items = adminListItems;
-                    break;
-                default:
-                    state.items = customerListItems;
-            }
-        })
+        builder
+            .addMatcher(authApiSlice.endpoints.login.matchFulfilled, (state, action) => {
+                const { role } = action.payload;
+                switch (role) {
+                    case ROLES.customer:
+                        state.items = customerListItems;
+                        break;
+                    case ROLES.employee:
+                        state.items = employeeListItems;
+                        break;
+                    case ROLES.admin:
+                        state.items = adminListItems;
+                        break;
+                    default:
+                        state.items = customerListItems;
+                }
+            })
+            .addMatcher(authApiSlice.endpoints.refresh.matchFulfilled, (state, action) => {
+                const { role } = action.payload;
+                switch (role) {
+                    case ROLES.customer:
+                        state.items = customerListItems;
+                        break;
+                    case ROLES.employee:
+                        state.items = employeeListItems;
+                        break;
+                    case ROLES.admin:
+                        state.items = adminListItems;
+                        break;
+                    default:
+                        state.items = customerListItems;
+                }
+            })
     }
 });
 

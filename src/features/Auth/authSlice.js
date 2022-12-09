@@ -29,7 +29,13 @@ const authSlice = createSlice({
                 state.currentUser.email = email;
                 state.currentUser.role = role || ROLES.customer;
                 state.accessToken = token;
-            });
+            })
+            .addMatcher(authApiSlice.endpoints.refresh.matchFulfilled, (state, action) => {
+                const { email, token, role } = action.payload;
+                state.currentUser.email = email;
+                state.currentUser.role = role || ROLES.customer;
+                state.accessToken = token;
+            })
     },
 });
 

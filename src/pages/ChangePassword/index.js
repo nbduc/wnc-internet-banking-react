@@ -6,6 +6,7 @@ import {
     Typography,
     Container,
 } from "@mui/material";
+import LoadingButton from "@mui/lab/LoadingButton";
 import Footer from "../../components/Footer";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
@@ -13,7 +14,7 @@ import { useChangePasswordMutation } from "../../features/User/userApiSlice";
 import MessageAlert from "../../components/MessageAlert";
 
 function ChangePasswordPage(props) {
-    const [changePassword] = useChangePasswordMutation();
+    const [changePassword, {isLoading}] = useChangePasswordMutation();
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -130,15 +131,16 @@ function ChangePasswordPage(props) {
                                 value={confirmPassword}
                                 onChange={handleConfirmPasswordInput}
                             />
-                            <Button
+                            <LoadingButton
                                 type="submit"
                                 fullWidth
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
+                                loading={isLoading}
                                 disabled={!canSubmit}
                             >
                                 Thay đổi
-                            </Button>
+                            </LoadingButton>
                         </Box>
                         <Button
                             fullWidth

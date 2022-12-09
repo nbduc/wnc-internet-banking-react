@@ -5,6 +5,8 @@ import {
     Typography,
     Container,
     Link,
+    FormControlLabel,
+    Checkbox
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { Link as RouterLink } from "react-router-dom";
@@ -14,7 +16,7 @@ import { useEffect, useState, useRef } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useLoginMutation } from "../../features/Auth/authApiSlice";
 import MessageAlert from "../../components/MessageAlert";
-
+import usePersist from "../../hooks/usePersist";
 
 function LoginPage(props) {
     const [login, { isLoading: isLoggingIn }] = useLoginMutation();
@@ -23,6 +25,7 @@ function LoginPage(props) {
     const [password, setPassword] = useState('');
     const [checked, setChecked] = useState(false);
     const [errMsg, setErrMsg] = useState('');
+    const [persist, setPersist] = usePersist();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -51,21 +54,23 @@ function LoginPage(props) {
         setChecked(true);
     }
 
+    const handleToggle = () => setPersist(prev => !prev);
+
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const reCaptchaToken = captchaRef.current?.getValue();
-        captchaRef.current.reset();
 
         //data and error
         try {
+            await login({ email, password, reCaptchaToken }).unwrap();
+            setIsLoggedIn(true);
+        } catch (err) {
             setEmail('');
             setPassword('');
             setErrMsg('');
             setChecked(false);
-            await login({ email, password, reCaptchaToken }).unwrap();
-            setIsLoggedIn(true);
-        } catch (err) {
+            captchaRef.current.reset();
             if (!err?.status) {
                 setErrMsg('Máy chủ không phản hồi');
             } else {
@@ -110,7 +115,7 @@ function LoginPage(props) {
                             component="form"
                             onSubmit={handleSubmit}
                             noValidate
-                            sx={{ mt: 1 }}
+                            sx={{ mt: 1}}
                         >
                             <TextField
                                 margin="normal"
@@ -137,6 +142,7 @@ function LoginPage(props) {
                                 onChange={handlePasswordInput}
                             />
                             <ReCAPTCHA sitekey={process.env.REACT_APP_SITE_KEY} onChange={handleReCaptcha} ref={captchaRef} />
+                            <FormControlLabel control={<Checkbox checked={persist} onChange={handleToggle} />} label="Trust this device" />
                             <LoadingButton
                                 type="submit"
                                 fullWidth

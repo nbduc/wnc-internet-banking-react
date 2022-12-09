@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import pageReducer from "../features/Page/pageSlice";
 import authReducer from "../features/Auth/authSlice";
-import { apiSlice } from "../api/apiSlice";
+import { apiSlice } from "./apiSlice";
 
 const store = configureStore({
     reducer: {

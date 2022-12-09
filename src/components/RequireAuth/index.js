@@ -5,7 +5,6 @@ function RequireAuth({allowedRoles}) {
     const location = useLocation();
     const currentUser = useSelector(state => state.auth.currentUser);
     return (
-
         allowedRoles?.includes(currentUser?.role)
             ? <Outlet />
             : currentUser?.email && !allowedRoles
