@@ -51,7 +51,7 @@ function ChangePasswordPage(props) {
         } catch (err) {
             resetStates();
             if (!err?.status) {
-                setMsg("Không thể kết nối đến máy chủ.");
+                setMsg("Lỗi máy chủ.");
             } else if(err?.status){
                 setMsg(err.data.message);
             } else {

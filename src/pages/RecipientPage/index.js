@@ -15,6 +15,10 @@ import "@fontsource/roboto/700.css";
 import { IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import { useGetRecipientsByCustomerIdQuery } from "../../features/Recipient/recipientApiSlice";
+import { useSelector } from "react-redux";
 
 const columns = [
     { id: "name", label: "Tên người nhận", minWidth: 170 },
@@ -32,27 +36,9 @@ const columns = [
     },
 ];
 
-function createData(name, accountNumber, bank) {
-    return { name, accountNumber, bank };
+const createData = (name, accountNumber, bank) => {
+    return { name, accountNumber, bank }
 }
-
-const rows = [
-    createData("India", "IN", 1324171354),
-    createData("China", "CN", 1403500365),
-    createData("Italy", "IT", 60483973),
-    createData("United States", "US", 327167434),
-    createData("Canada", "CA", 37602103),
-    createData("Australia", "AU", 25475400),
-    createData("Germany", "DE", 83019200),
-    createData("Ireland", "IE", 4857000),
-    createData("Mexico", "MX", 126577691),
-    createData("Japan", "JP", 126317000),
-    createData("France", "FR", 67022000),
-    createData("United Kingdom", "GB", 67545757),
-    createData("Russia", "RU", 146793744),
-    createData("Nigeria", "NG", 200962417),
-    createData("Brazil", "BR", 210147125),
-];
 
 function RecipientList() {
     const [page, setPage] = React.useState(0);
@@ -67,88 +53,107 @@ function RecipientList() {
         setPage(0);
     };
 
+    const userId = useSelector(state => state.auth.currentUser.userId);
+    const { data: recipientList } = useGetRecipientsByCustomerIdQuery(userId);
+    const rows = recipientList?.map((recipient, idx) => createData(
+        recipient.accountName || recipient.nickName,
+        recipient.accountNumber,
+        recipient.bank.bankName
+    ));
+
     return (
-        <Paper sx={{ width: "100%" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{
-                                        minWidth: column.minWidth,
-                                    }}
-                                >
-                                    {column.label}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows
-                            .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage
-                            )
-                            .map((row) => {
-                                return (
-                                    <TableRow
-                                        hover
-                                        role="checkbox"
-                                        tabIndex={-1}
-                                        key={row.name}
-                                    >
-                                        {columns.map((column) => {
-                                            if (column.id === "actions") {
-                                                return (
-                                                    <TableCell
-                                                        key={column.id}
-                                                        align={column.align}
-                                                    >
-                                                        <Tooltip title="Chỉnh sửa">
-                                                            <IconButton color="primary">
-                                                                <EditIcon />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                        <Tooltip title="Xóa">
-                                                            <IconButton color="secondary">
-                                                                <DeleteIcon />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    </TableCell>
-                                                );
-                                            }
-                                            const value = row[column.id];
-                                            return (
-                                                <TableCell
-                                                    key={column.id}
-                                                    align={column.align}
-                                                >
-                                                    {column.format &&
-                                                    typeof value === "number"
-                                                        ? column.format(value)
-                                                        : value}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                );
-                            })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
-        </Paper>
+        <>
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={rows === undefined}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            {!rows && "Không có người nhận nào."}
+            {rows &&
+                <Paper sx={{ width: "100%" }}>
+                    <TableContainer sx={{ maxHeight: 440 }}>
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    {columns.map((column) => (
+                                        <TableCell
+                                            key={column.id}
+                                            align={column.align}
+                                            style={{
+                                                minWidth: column.minWidth,
+                                            }}
+                                        >
+                                            {column.label}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows
+                                    .slice(
+                                        page * rowsPerPage,
+                                        page * rowsPerPage + rowsPerPage
+                                    )
+                                    .map((row) => {
+                                        return (
+                                            <TableRow
+                                                hover
+                                                role="checkbox"
+                                                tabIndex={-1}
+                                                key={row.name}
+                                            >
+                                                {columns.map((column) => {
+                                                    if (column.id === "actions") {
+                                                        return (
+                                                            <TableCell
+                                                                key={column.id}
+                                                                align={column.align}
+                                                            >
+                                                                <Tooltip title="Chỉnh sửa">
+                                                                    <IconButton color="primary">
+                                                                        <EditIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                                <Tooltip title="Xóa">
+                                                                    <IconButton color="secondary">
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                </Tooltip>
+                                                            </TableCell>
+                                                        );
+                                                    }
+                                                    const value = row[column.id];
+                                                    return (
+                                                        <TableCell
+                                                            key={column.id}
+                                                            align={column.align}
+                                                        >
+                                                            {column.format &&
+                                                            typeof value === "number"
+                                                                ? column.format(value)
+                                                                : value}
+                                                        </TableCell>
+                                                    );
+                                                })}
+                                            </TableRow>
+                                        );
+                                    })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </Paper>
+            }
+        </>
     );
 }
 
