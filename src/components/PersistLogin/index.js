@@ -37,7 +37,7 @@ const PersistLogin = () => {
         content = (
             <p>
                 {error.data?.message}
-                <Link to="/login">Please login again</Link>.
+                <Link to="/login">Vui lòng đăng nhập lại.</Link>.
             </p>
         )
     } else if (isSuccess && trueSuccess) { //persist: yes, token: yes

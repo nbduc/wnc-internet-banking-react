@@ -6,7 +6,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import EmployeeDetailsForm from "../EmployeeDetailsForm";
 
-function AddingEmployeeDialog(props) {
+function AddEmployeeDialog(props) {
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -36,4 +36,4 @@ function AddingEmployeeDialog(props) {
     );
 }
 
-export default AddingEmployeeDialog;
+export default AddEmployeeDialog;

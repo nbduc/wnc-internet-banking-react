@@ -45,7 +45,7 @@ function ChangePasswordPage(props) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            await changePassword({ oldPassword: currentPassword, newPassword, confirmPassword });
+            await changePassword({ oldPassword: currentPassword, newPassword, confirmPassword }).unwrap();
             resetStates()
             setMsg('Đổi mật khẩu thành công.');
         } catch (err) {

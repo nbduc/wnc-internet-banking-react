@@ -8,7 +8,7 @@ import EmployeeDetailsForm from "../EmployeeDetailsForm";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 
-function EditingEmployeeDetailsDialog(props) {
+function EditEmployeeDetailsDialog(props) {
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -37,4 +37,4 @@ function EditingEmployeeDetailsDialog(props) {
     );
 }
 
-export default EditingEmployeeDetailsDialog;
+export default EditEmployeeDetailsDialog;

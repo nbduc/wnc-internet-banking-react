@@ -13,9 +13,9 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import AddingEmployeeDialog from "../../components/AddingEmployeeDialog";
+import AddEmployeeDialog from "../../components/AddEmployeeDialog";
 import EmployeeDetailsDialog from "../../components/EmployeeDetailsDialog";
-import EditingEmployeeDetailsDialog from "../../components/EditingEmployeeDetailsDialog";
+import EditEmployeeDetailsDialog from "../../components/EditEmployeeDetailsDialog";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 const columns = [
@@ -110,7 +110,7 @@ function EmployeeList() {
                                                         align={column.align}
                                                     >
                                                         <EmployeeDetailsDialog></EmployeeDetailsDialog>
-                                                        <EditingEmployeeDetailsDialog></EditingEmployeeDetailsDialog>
+                                                        <EditEmployeeDetailsDialog></EditEmployeeDetailsDialog>
                                                         <IconButton>
                                                             <DeleteIcon />
                                                         </IconButton>
@@ -152,9 +152,9 @@ function EmployeeList() {
 function EmployeeManagementPage() {
     return (
         <>
-            <AddingEmployeeDialog
+            <AddEmployeeDialog
                 sx={{ marginBottom: 3 }}
-            ></AddingEmployeeDialog>
+            ></AddEmployeeDialog>
             <Paper>
                 <EmployeeList></EmployeeList>
             </Paper>

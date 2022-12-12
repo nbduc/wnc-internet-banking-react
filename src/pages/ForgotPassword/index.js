@@ -33,7 +33,7 @@ function ForgotPasswordPage(props) {
         const data = await validate({ email });
         if (data === null) return;
         try {
-            await forgotPassword(email);
+            await forgotPassword(email).unwrap();
             setEmailForgotPassword(email);
         } catch (err) {
             setErrMsg('');
