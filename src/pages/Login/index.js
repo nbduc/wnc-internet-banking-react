@@ -17,6 +17,9 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useLoginMutation } from "../../features/Auth/authApiSlice";
 import MessageAlert from "../../components/MessageAlert";
 import usePersist from "../../hooks/usePersist";
+import { useSelector } from "react-redux";
+import { selectRole } from "../../features/Auth/authSlice";
+import { employeeListItems, adminListItems, customerListItems, ROLES } from "../../common";
 
 function LoginPage(props) {
     const [login, { isLoading: isLoggingIn }] = useLoginMutation();
@@ -26,6 +29,7 @@ function LoginPage(props) {
     const [checked, setChecked] = useState(false);
     const [errMsg, setErrMsg] = useState('');
     const [persist, setPersist] = usePersist();
+    const userRole = useSelector(selectRole);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -36,11 +40,19 @@ function LoginPage(props) {
 
     //already logged in
     useEffect(() => {
-        const from = location.state?.from?.pathname || "/";
+        const getFirstPlace = (() => {
+            switch (userRole) {
+                case ROLES.admin: return adminListItems[0].link;
+                case ROLES.employee: return employeeListItems[0].link;
+                case ROLES.customer: return customerListItems[0].link;
+                default: return '/';
+            }
+        })()
+        const from = location.state?.from?.pathname || getFirstPlace;
         if (isLoggedIn) {
             navigate(from, {replace: true});
         }
-    }, [navigate, location, isLoggedIn]);
+    }, [navigate, location, isLoggedIn, userRole]);
 
     const handleEmailInput = (event) => {
         setEmail(event.target.value);

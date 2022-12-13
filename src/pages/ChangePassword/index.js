@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import Footer from "../../components/Footer";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useChangePasswordMutation } from "../../features/User/userApiSlice";
 import MessageAlert from "../../components/MessageAlert";
@@ -21,7 +21,6 @@ function ChangePasswordPage(props) {
     const [msg, setMsg] = useState('');
 
     const navigate = useNavigate();
-    const location = useLocation();
 
     const handleCurrentPasswordInput = (event) => {
         setCurrentPassword(event.target.value);
@@ -60,10 +59,8 @@ function ChangePasswordPage(props) {
         }
     };
 
-    const from = location.state?.from?.pathname || "/";
-
     const handleBackButton = (event) => {
-        navigate(from);
+        navigate(-1);
     }
     return (
         <>

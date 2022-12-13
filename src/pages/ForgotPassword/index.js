@@ -17,7 +17,7 @@ import useFormValidator from "../../hooks/useFormValidator";
 
 function ForgotPasswordPage(props) {
     const forgotPasswordSchema = yup.object().shape({
-        email: yup.string().email()
+        email: yup.string().email("Email không đúng đing dạng.")
     });
     const { errors, texts, validate } = useFormValidator(forgotPasswordSchema);
 
@@ -37,7 +37,7 @@ function ForgotPasswordPage(props) {
             setEmailForgotPassword(email);
         } catch (err) {
             setErrMsg('');
-            if(err.status){
+            if(!err.success){
                 setErrMsg(err.data.errors?.join('</br>'));
             } else {
                 setErrMsg("Không thể thực hiện.");

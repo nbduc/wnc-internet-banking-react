@@ -16,10 +16,18 @@ export const userApiSlice = apiSlice.injectEndpoints({
                 body: {email}
             }),
         }),
+        createUser: builder.mutation({
+            query: (params) => ({
+                url: "api/users",
+                method: "POST",
+                body: {...params}
+            }),
+        }),
     })
 })
 
 export const {
     useChangePasswordMutation,
-    useForgotPasswordMutation
+    useForgotPasswordMutation,
+    useCreateUserMutation,
 } = userApiSlice;

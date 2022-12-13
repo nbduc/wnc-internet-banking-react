@@ -8,10 +8,12 @@ import { useSelector } from "react-redux";
 import { useState } from "react";
 import { userListItems } from "../../common";
 import { useNavigate } from "react-router-dom";
+import { selectCurrentUser, selectRole } from "../../features/Auth/authSlice";
 
 function UserActions() {
     const navigate = useNavigate();
-    const currentUser = useSelector((state) => state.auth.currentUser);
+    const currentUser = useSelector(selectCurrentUser);
+    const currentRole = useSelector(selectRole);
 
     const [anchorEl, setAnchorEl] = useState(null);
     const actionListOpen = Boolean(anchorEl);
@@ -41,8 +43,17 @@ function UserActions() {
                     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                         <Typography
                             component="div"
-                            variant="body1"
+                            variant="h6"
                             color="text.primary"
+                        >
+                            {currentUser?.firstName}
+                            {" "}
+                            {currentUser?.lastName}
+                        </Typography>
+                        <Typography
+                            component="div"
+                            variant="body1"
+                            color="text.secondary"
                         >
                             {currentUser?.email}
                         </Typography>
@@ -51,7 +62,7 @@ function UserActions() {
                             variant="body2"
                             color="text.secondary"
                         >
-                            {currentUser?.role}
+                            {currentRole}
                         </Typography>
                     </Box>
                 </MenuItem>

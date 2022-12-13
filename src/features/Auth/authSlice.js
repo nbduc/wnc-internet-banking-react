@@ -16,7 +16,14 @@ const initialState = {
     currentUser: {
         userId: null,
         email: null,
-        role: null,
+        firstName: null,
+        lastName: null,
+        phone: null,
+        role: {
+            roleName: null,
+            customerId: null,
+            staffId: null,
+        },
     },
     accessToken: null,
 };
@@ -36,22 +43,36 @@ const authSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addMatcher(authApiSlice.endpoints.login.matchFulfilled, (state, action) => {
-                const { email, token } = action.payload;
-                const { id, role } = jwtDecode(token);
+                const { token } = action.payload;
+                const { id, email, firstName, lastName, phone, role, customerId, staffId } = jwtDecode(token);
                 state.currentUser = {
                     userId: id,
                     email,
-                    role: matchRole(role)
+                    firstName,
+                    lastName,
+                    phone,
+                    role: {
+                        roleName: matchRole(role),
+                        customerId,
+                        staffId,
+                    }
                 }
                 state.accessToken = token;
             })
             .addMatcher(authApiSlice.endpoints.refresh.matchFulfilled, (state, action) => {
-                const { email, token } = action.payload;
-                const { id, role } = jwtDecode(token);
+                const { token } = action.payload;
+                const { id, email, firstName, lastName, phone, role, customerId, staffId } = jwtDecode(token);
                 state.currentUser = {
                     userId: id,
                     email,
-                    role: matchRole(role)
+                    firstName,
+                    lastName,
+                    phone,
+                    role: {
+                        roleName: matchRole(role),
+                        customerId,
+                        staffId,
+                    }
                 }
                 state.accessToken = token;
             })
@@ -61,4 +82,6 @@ const authSlice = createSlice({
 export const { logout, setCurrentUser, setAccessToken } = authSlice.actions;
 export const selectCurrentToken = (state) => state.auth.accessToken;
 export const selectCurrentUser = (state) => state.auth.currentUser;
+export const selectRole = (state) => state.auth.currentUser.role.roleName;
+export const selectAccessToken = (state) => state.auth.accessToken;
 export default authSlice.reducer;

@@ -6,6 +6,16 @@ import {
     adminListItems,
     employeeListItems,
 } from "../../common";
+import jwtDecode from "jwt-decode";
+
+const matchRole = (role) => {
+    switch (role) {
+        case 'CUSTOMER': return ROLES.customer;
+        case 'TELLER': return ROLES.employee;
+        case 'ADMINISTRATOR': return ROLES.admin;
+        default: return ROLES.customer
+    }  
+}
 
 const initialState = {
     activePage: null,
@@ -30,8 +40,9 @@ const pageSlice = createSlice({
     extraReducers: builder => {
         builder
             .addMatcher(authApiSlice.endpoints.login.matchFulfilled, (state, action) => {
-                const { role } = action.payload;
-                switch (role) {
+                const { token } = action.payload;
+                const { role } = jwtDecode(token);
+                switch (matchRole(role)) {
                     case ROLES.customer:
                         state.items = customerListItems;
                         break;
@@ -46,8 +57,9 @@ const pageSlice = createSlice({
                 }
             })
             .addMatcher(authApiSlice.endpoints.refresh.matchFulfilled, (state, action) => {
-                const { role } = action.payload;
-                switch (role) {
+                const { token } = action.payload;
+                const { role } = jwtDecode(token);
+                switch (matchRole(role)) {
                     case ROLES.customer:
                         state.items = customerListItems;
                         break;

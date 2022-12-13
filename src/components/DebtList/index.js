@@ -7,7 +7,6 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
-import Grid from "@mui/material/Grid";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
@@ -107,14 +106,8 @@ function DebtList() {
                                                         key={column.id}
                                                         align={column.align}
                                                     >
-                                                        <Grid container>
-                                                            <Grid item xs={4}>
-                                                                <PaymentFormDialog />
-                                                            </Grid>
-                                                            <Grid item xs={4}>
-                                                                <PaymentRequestCancelFormDialog/>
-                                                            </Grid>
-                                                        </Grid>
+                                                        <PaymentFormDialog />
+                                                        <PaymentRequestCancelFormDialog/>
                                                     </TableCell>
                                                 );
                                             }
