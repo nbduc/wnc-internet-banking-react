@@ -84,3 +84,9 @@ export const ROLES = {
     customer: "Customer",
     employee: "Employee",
 };
+
+export const TRANSACTION_TYPES = {
+    "RECEIVEMONEY": "Giao dịch Nhận tiền",
+    "TRANSFER": "Giao dịch Chuyển khoản",
+    "PAYDEBT": "Giao dịch Thanh toán nhắc nợ",
+};

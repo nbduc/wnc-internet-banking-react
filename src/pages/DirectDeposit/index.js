@@ -21,7 +21,7 @@ function DirectDepositPage() {
     const handleEmailInput = (event) => {
         setEmail(event.target.value);
     }
-    const handleAccountNumberInput = ({value}) => {
+    const handleAccountNumberInput = (_event, value) => {
         setAccountNumber(value);
     }
     const handleAmountInput = (event) => {

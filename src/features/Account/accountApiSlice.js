@@ -31,6 +31,18 @@ export const accountApiSlice = apiSlice.injectEndpoints({
             transformResponse: (response) => response.data,
             transformErrorResponse: (response) => response.data,
         }),
+        getTransactionHistoryByAccountNumber: builder.query({
+            query: (accountNumber) => ({
+                url: `api/accounts/acount-number/${accountNumber}/transaction-history`,
+                method: "GET"
+            }),
+        }),
+        getAccountByAccountNumber: builder.query({
+            query: (accountNumber) => ({
+                url: `api/accounts/acount-number/${accountNumber}`,
+                method: "GET",
+            }),
+        }),
     })
 })
 
@@ -39,4 +51,6 @@ export const {
     useCreateAccountMutation,
     useDirectDepositMutation,
     useGetAccountsByEmailQuery,
+    useGetTransactionHistoryByAccountNumberQuery,
+    useGetAccountByAccountNumberQuery,
 } = accountApiSlice;
