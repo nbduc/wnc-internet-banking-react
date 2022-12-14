@@ -90,3 +90,8 @@ export const TRANSACTION_TYPES = {
     "TRANSFER": "Giao dịch Chuyển khoản",
     "PAYDEBT": "Giao dịch Thanh toán nhắc nợ",
 };
+
+export const TRANSACTION_STATUSES = {
+    "SUCCESS": "Thành công",
+    "FAIL": "Thất bại"
+}

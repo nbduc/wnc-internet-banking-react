@@ -14,14 +14,28 @@ import {
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState, forwardRef } from "react";
+import { useState, forwardRef, useEffect } from "react";
 import TransactionHistoryList from "../TransactionHistoryList";
+import { accountApiSlice } from "../../features/Account/accountApiSlice";
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
 function AccountCard({ accountName, accountNumber, accountBalance }) {
+    const [
+        getTransactionHistoryByAccountNumber,
+        { isFetching, data: transactionHistoryResponse, isSuccess }
+    ] = accountApiSlice.endpoints.getTransactionHistoryByAccountNumber.useLazyQuery();
+
+    const [transactionHistory, setTransactionHistory] = useState([]);
+
+    useEffect(() => {
+        if (isSuccess) {
+            setTransactionHistory(transactionHistoryResponse);
+        }
+    }, [isSuccess, transactionHistoryResponse]);
+
     const currencyFormatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
@@ -36,8 +50,9 @@ function AccountCard({ accountName, accountNumber, accountBalance }) {
     };
 
     const [transactionHistoryOpen, setOpen] = useState(false);
-    const transactionHistoryHandleClickOpen = () => {
+    const transactionHistoryHandleClickOpen = async () => {
         setOpen(true);
+        getTransactionHistoryByAccountNumber(accountNumber);
     };
     const transactionHistoryHandleClose = () => {
         setOpen(false);
@@ -96,7 +111,7 @@ function AccountCard({ accountName, accountNumber, accountBalance }) {
                 }}
             >
                 <MenuItem
-                    onClick={(e) => {
+                    onClick={async (e) => {
                         actionListHandleClose(e);
                         transactionHistoryHandleClickOpen(e);
                     }}
@@ -130,7 +145,7 @@ function AccountCard({ accountName, accountNumber, accountBalance }) {
                         </Typography>
                     </Toolbar>
                 </AppBar>
-                <TransactionHistoryList></TransactionHistoryList>
+                <TransactionHistoryList history={transactionHistory} loading={isFetching}></TransactionHistoryList>
             </Dialog>
         </>
     );

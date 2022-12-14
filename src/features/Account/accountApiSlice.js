@@ -7,6 +7,8 @@ export const accountApiSlice = apiSlice.injectEndpoints({
                 url: `api/accounts?customerId=${customerId}`,
                 method: "GET",
             }),
+            transformResponse: (response) => response.data,
+            transformErrorResponse: (response) => response.data,
         }),
         createAccount: builder.mutation({
             query: (params) => ({
@@ -36,6 +38,11 @@ export const accountApiSlice = apiSlice.injectEndpoints({
                 url: `api/accounts/acount-number/${accountNumber}/transaction-history`,
                 method: "GET"
             }),
+            transformResponse: (response) => {
+                return response.data.sort((a, b) => {
+                    return new Date(b.transactionDate) - new Date(a.transactionDate);
+                })
+            },
         }),
         getAccountByAccountNumber: builder.query({
             query: (accountNumber) => ({

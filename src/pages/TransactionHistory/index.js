@@ -72,7 +72,7 @@ function TransactionHistoryPage() {
         event.preventDefault();
         try {
             const result = await getTransactionHistoryByAccountNumber(accountNumber).unwrap();
-            setTransactionHistory(result.data);
+            setTransactionHistory(result);
         } catch (err) {
             setMsg('');
             if(!err.success){

@@ -5,20 +5,25 @@ import {
     Typography,
     Grid,
 } from "@mui/material";
+import LinearIndeterminate from "../LinearIndeterminate";
+import { TRANSACTION_TYPES, TRANSACTION_STATUSES } from "../../common";
 
-import { TRANSACTION_TYPES } from "../../common";
-
-export default function TransactionHistoryList({history}) {
+export default function TransactionHistoryList({history, loading}) {
     const currencyFormatter = new Intl.NumberFormat("vi-VN", {
         style: "currency",
         currency: "VND",
     });
     return (
         <>
-            {history.length === 0 && <Typography>Không có lịch sử giao dịch.</Typography>}
-            {history.length !== 0 && 
+            {loading && <LinearIndeterminate/>}
+            {history?.length === 0 &&
+                <Typography variant="body1" sx={{ textAlign: "center", marginTop: 5 }}>
+                    Không có lịch sử giao dịch.
+                </Typography>
+            }
+            {history?.length !== 0 && 
                 <List>
-                    {history.map((item, idx) => {
+                    {history?.map((item, idx) => {
                         return (
                             <ListItem key={idx}>
                                 <ListItemButton divider>
@@ -44,6 +49,13 @@ export default function TransactionHistoryList({history}) {
                                                 color="text.secondary"
                                             >
                                                 {item.content}
+                                            </Typography>
+                                            <Typography
+                                                component="div"
+                                                variant="body2"
+                                                color="text.secondary"
+                                            >
+                                                {TRANSACTION_STATUSES[item.transactionStatus]}
                                             </Typography>
                                         </Grid>
                                         <Grid item xs={2}>
