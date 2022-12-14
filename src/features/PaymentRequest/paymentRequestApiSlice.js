@@ -2,13 +2,14 @@ import { apiSlice } from "../../app/apiSlice";
 
 export const paymentRequestApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
-        getPaymentRequestById: builder.query({
-            query: (id) => ({
-                url: `api/debt-reminders?id=${id}`,
+        getPaymentRequestByCustomerId: builder.query({
+            query: (customerId) => ({
+                url: `api/debt-reminders/${customerId}`,
                 method: "GET",
             }),
-        })
-    })
-})
+            providesTags: ["PaymentRequests"],
+        }),
+    }),
+});
 
-export const { useGetPaymentRequestByIdQuery } = paymentRequestApiSlice;
+export const { useGetPaymentRequestByCustomerIdQuery } = paymentRequestApiSlice;

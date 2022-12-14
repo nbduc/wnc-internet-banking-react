@@ -12,51 +12,42 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import { useSelector } from "react-redux";
+import { selectCustomerId } from "../../features/Auth/authSlice";
+import { useGetPaymentRequestByCustomerIdQuery } from "../../features/PaymentRequest/paymentRequestApiSlice";
+import { Typography } from "@mui/material";
+import { PAYMENT_REQUEST_STATUSES } from "../../common";
 
 const columns = [
-    { id: "datetime", label: "Ngày", minWidth: 50 },
-    { id: "name", label: "Tên người nợ", minWidth: 170 },
-    { id: "accountNumber", label: "Số tài khoản", minWidth: 100 },
-    {
-        id: "memoInformation",
-        label: "Nội dung nhắc nợ",
-        minWidth: 200,
-    },
-    {
-        id: "status",
-        label: "Trạng thái",
-        minWidth: 50,
-    },
-    {
-        id: "actions",
-        label: "Thao tác",
-        minWidth: 50,
-    },
+    { id: "createdDate", label: "Ngày", minWidth: 50 },
+    { id: "toAccountName", label: "Tên người nợ", minWidth: 170 },
+    { id: "toAccountNumber", label: "Số tài khoản", minWidth: 100 },
+    { id: "content", label: "Nội dung nhắc nợ", minWidth: 200, },
+    { id: "status", label: "Trạng thái", minWidth: 50, },
+    { id: "actions", label: "Thao tác", minWidth: 50, },
 ];
 
-function createData(name, accountNumber, memoInformation, status) {
-    return { name, accountNumber, memoInformation, status };
+function createData(createdDate, toAccountName, toAccountNumber, content, status) {
+    return { createdDate, toAccountName, toAccountNumber, content, status };
 }
 
-const rows = [
-    createData("India", "IN", 1324171354, 3287263),
-    createData("China", "CN", 1403500365, 9596961),
-    createData("Italy", "IT", 60483973, 301340),
-    createData("United States", "US", 327167434, 9833520),
-    createData("Canada", "CA", 37602103, 9984670),
-    createData("Australia", "AU", 25475400, 7692024),
-    createData("Germany", "DE", 83019200, 357578),
-    createData("Ireland", "IE", 4857000, 70273),
-    createData("Mexico", "MX", 126577691, 1972550),
-    createData("Japan", "JP", 126317000, 377973),
-    createData("France", "FR", 67022000, 640679),
-    createData("United Kingdom", "GB", 67545757, 242495),
-    createData("Russia", "RU", 146793744, 17098246),
-    createData("Nigeria", "NG", 200962417, 923768),
-    createData("Brazil", "BR", 210147125, 8515767),
-];
-
 function PaymentRequestList() {
+    const customerId = useSelector(selectCustomerId);
+    const {
+        data: paymentRequests,
+        isLoading: isPaymentRequestsLoading,
+        isError: isPaymentRequestError
+    } = useGetPaymentRequestByCustomerIdQuery(customerId);
+
+    const rows = paymentRequests ? paymentRequests?.map((p, idx) => {
+        return createData(
+            new Date(p.createdDate).toLocaleString("vi-VN"),
+                p.toAccountName,
+                p.toAccountNumber,
+                p.content,
+                PAYMENT_REQUEST_STATUSES[p.status]);
+    }) : [];
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
 
@@ -71,76 +62,85 @@ function PaymentRequestList() {
 
     return (
         <Box sx={{ width: "100%" }}>
-            <TableContainer sx={{ maxHeight: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
-                    <TableHead>
-                        <TableRow>
-                            {columns.map((column) => (
-                                <TableCell
-                                    key={column.id}
-                                    align={column.align}
-                                    style={{
-                                        minWidth: column.minWidth,
-                                    }}
-                                >
-                                    {column.label}
-                                </TableCell>
-                            ))}
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {rows
-                            .slice(
-                                page * rowsPerPage,
-                                page * rowsPerPage + rowsPerPage
-                            )
-                            .map((row) => {
-                                return (
-                                    <TableRow
-                                        hover
-                                        role="checkbox"
-                                        tabIndex={-1}
-                                        key={row.accountNumber}
-                                    >
-                                        {columns.map((column) => {
-                                            if (column.id === "actions") {
-                                                return (
-                                                    <TableCell
-                                                        key={column.id}
-                                                        align={column.align}
-                                                    >
-                                                        <PaymentRequestCancelFormDialog></PaymentRequestCancelFormDialog>
-                                                    </TableCell>
-                                                );
-                                            }
-                                            const value = row[column.id];
-                                            return (
-                                                <TableCell
-                                                    key={column.id}
-                                                    align={column.align}
-                                                >
-                                                    {column.format &&
-                                                    typeof value === "number"
-                                                        ? column.format(value)
-                                                        : value}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                );
-                            })}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+            {rows.length === 0 &&
+                <Typography variant="body1">
+                    Không có nhắc nợ nào.
+                </Typography>
+            }
+            {rows.length !== 0 && 
+                <>
+                    <TableContainer sx={{ maxHeight: 440 }}>
+                        <Table stickyHeader aria-label="sticky table">
+                            <TableHead>
+                                <TableRow>
+                                    {columns.map((column, idx) => (
+                                        <TableCell
+                                            key={idx}
+                                            align={column.align}
+                                            style={{
+                                                minWidth: column.minWidth,
+                                            }}
+                                        >
+                                            {column.label}
+                                        </TableCell>
+                                    ))}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {rows
+                                    .slice(
+                                        page * rowsPerPage,
+                                        page * rowsPerPage + rowsPerPage
+                                    )
+                                    .map((row, idx) => {
+                                        return (
+                                            <TableRow
+                                                hover
+                                                role="checkbox"
+                                                tabIndex={-1}
+                                                key={idx}
+                                            >
+                                                {columns.map((column, idx) => {
+                                                    if (column.id === "actions") {
+                                                        return (
+                                                            <TableCell
+                                                                key={idx}
+                                                                align={column.align}
+                                                            >
+                                                                <PaymentRequestCancelFormDialog></PaymentRequestCancelFormDialog>
+                                                            </TableCell>
+                                                        );
+                                                    }
+                                                    const value = row[column.id];
+                                                    return (
+                                                        <TableCell
+                                                            key={idx}
+                                                            align={column.align}
+                                                        >
+                                                            {column.format &&
+                                                            typeof value === "number"
+                                                                ? column.format(value)
+                                                                : value}
+                                                        </TableCell>
+                                                    );
+                                                })}
+                                            </TableRow>
+                                        );
+                                    })}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                    <TablePagination
+                        rowsPerPageOptions={[10, 25, 100]}
+                        component="div"
+                        count={rows.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+                </>
+            }
         </Box>
     );
 }

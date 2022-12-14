@@ -84,4 +84,5 @@ export const selectCurrentToken = (state) => state.auth.accessToken;
 export const selectCurrentUser = (state) => state.auth.currentUser;
 export const selectRole = (state) => state.auth.currentUser.role.roleName;
 export const selectAccessToken = (state) => state.auth.accessToken;
+export const selectCustomerId = (state) => state.auth.currentUser.role.customerId;
 export default authSlice.reducer;

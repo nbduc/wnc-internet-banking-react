@@ -95,3 +95,10 @@ export const TRANSACTION_STATUSES = {
     "SUCCESS": "Thành công",
     "FAIL": "Thất bại"
 }
+
+export const PAYMENT_REQUEST_STATUSES = {
+    "DRAFT": "Nháp",
+    "SENT": "Đã gửi",
+    "PAID": "Đã trả",
+    "DELETED": "Đã xóa"
+}
