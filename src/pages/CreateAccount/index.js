@@ -53,7 +53,7 @@ function CreateAccountPage() {
     const phoneRegExp = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
     const createAccountSchema = Yup.object().shape({
         email: Yup.string()
-            .email('Email không đúng đing dạng.')
+            .email('Email không đúng định dạng.')
             .required('Email là bắt buộc'),
         password: Yup.string()
             .min(8, 'Mật khẩu phải chứa ít nhất 8 ký tự.')
