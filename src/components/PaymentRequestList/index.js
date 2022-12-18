@@ -19,7 +19,7 @@ import { Typography } from "@mui/material";
 import { PAYMENT_REQUEST_STATUSES } from "../../common";
 
 const columns = [
-    { id: "createdDate", label: "Ngày", minWidth: 50 },
+    { id: "createdDate", label: "Thời gian", minWidth: 50 },
     { id: "toAccountName", label: "Tên người nợ", minWidth: 170 },
     { id: "toAccountNumber", label: "Số tài khoản", minWidth: 100 },
     { id: "content", label: "Nội dung nhắc nợ", minWidth: 200, },
@@ -27,8 +27,8 @@ const columns = [
     { id: "actions", label: "Thao tác", minWidth: 50, },
 ];
 
-function createData(createdDate, toAccountName, toAccountNumber, content, status) {
-    return { createdDate, toAccountName, toAccountNumber, content, status };
+function createData(id, createdDate, toAccountName, toAccountNumber, content, status) {
+    return { id, createdDate, toAccountName, toAccountNumber, content, status };
 }
 
 function PaymentRequestList() {
@@ -41,11 +41,12 @@ function PaymentRequestList() {
 
     const rows = paymentRequests ? paymentRequests?.map((p, idx) => {
         return createData(
+            p.id,
             new Date(p.createdDate).toLocaleString("vi-VN"),
-                p.toAccountName,
-                p.toAccountNumber,
-                p.content,
-                PAYMENT_REQUEST_STATUSES[p.status]);
+            p.toAccountName,
+            p.toAccountNumber,
+            p.content,
+            PAYMENT_REQUEST_STATUSES[p.status]);
     }) : [];
 
     const [page, setPage] = React.useState(0);
@@ -107,7 +108,7 @@ function PaymentRequestList() {
                                                                 key={idx}
                                                                 align={column.align}
                                                             >
-                                                                <PaymentRequestCancelFormDialog></PaymentRequestCancelFormDialog>
+                                                                <PaymentRequestCancelFormDialog id={row.id}></PaymentRequestCancelFormDialog>
                                                             </TableCell>
                                                         );
                                                     }

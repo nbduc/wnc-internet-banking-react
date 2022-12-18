@@ -56,6 +56,7 @@ function PaymentRequestFormDialog() {
     const onSetToAccount = (toAccountNumber, toAccountName) => {
         setToAccountName(toAccountName);
         setToAccountNumber(toAccountNumber);
+        setToAccountErrMsg('');
     }
 
     const resetForm = () => {
@@ -78,15 +79,14 @@ function PaymentRequestFormDialog() {
     };
 
     const handleToAccountNumberInputBlur = async (e) => {
+        setToAccountName('');
         if (toAccountNumber) {
             try {
-                const response = await getAccountByAccountNumber(toAccountNumber);
-                const accountName = response.data.data.accountName;
+                const response = await getAccountByAccountNumber(toAccountNumber).unwrap();
+                const accountName = response.data?.data?.accountName;
                 setToAccountName(accountName? accountName : '');
             } catch (err) {
-                console.log(err);
-                setMsg('');
-                if(!err.success){
+                if (!err.success) {
                     setToAccountErrMsg(err.data.errors?.join('</br>'));
                 } else {
                     setToAccountErrMsg("Không thể thực hiện.");
@@ -115,7 +115,12 @@ function PaymentRequestFormDialog() {
             }).unwrap();
             setMsg("Gửi nhắc nợ thành công.")
         } catch (err) {
-            setMsg(err.message);
+            setMsg('');
+            if(!err.success){
+                setMsg(err.data.errors?.join('</br>'));
+            } else {
+                setMsg("Không thể thực hiện.");
+            }
         }
         setOpen(false);
         resetForm();

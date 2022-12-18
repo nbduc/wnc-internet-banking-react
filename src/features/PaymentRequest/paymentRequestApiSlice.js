@@ -17,7 +17,19 @@ export const paymentRequestApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["PaymentRequests"],
         }),
+        deletePaymentRequest: builder.mutation({
+            query: (params) => ({
+                url: `api/debt-reminders`,
+                method: "DELETE",
+                body: params
+            }),
+            invalidatesTags: ["PaymentRequests"],
+        }),
     }),
 });
 
-export const { useGetPaymentRequestByCustomerIdQuery, useCreatePaymentRequestMutation } = paymentRequestApiSlice;
+export const {
+    useGetPaymentRequestByCustomerIdQuery,
+    useCreatePaymentRequestMutation,
+    useDeletePaymentRequestMutation,
+} = paymentRequestApiSlice;
