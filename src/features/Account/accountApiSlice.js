@@ -46,7 +46,7 @@ export const accountApiSlice = apiSlice.injectEndpoints({
         }),
         getAccountByAccountNumber: builder.query({
             query: (accountNumber) => ({
-                url: `api/accounts/acount-number/${accountNumber}`,
+                url: `api/accounts/account-number/${accountNumber}`,
                 method: "GET",
             }),
         }),

@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import pageReducer from "../features/Page/pageSlice";
 import authReducer from "../features/Auth/authSlice";
 import userReducer from "../features/User/userSlice";
+import paymentRequestReducer from "../features/PaymentRequest/paymentRequestSlice";
 import { apiSlice } from "./apiSlice";
 
 const store = configureStore({
@@ -10,6 +11,7 @@ const store = configureStore({
         pageList: pageReducer,
         auth: authReducer,
         user: userReducer,
+        paymentRequest: paymentRequestReducer,
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware({

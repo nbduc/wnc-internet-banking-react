@@ -8,8 +8,63 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import AccountListDialog from "../AccountListDialog";
+import { useSelector } from "react-redux";
+import { useCreatePaymentRequestMutation } from "../../features/PaymentRequest/paymentRequestApiSlice";
+import MessageAlert from "../MessageAlert";
+import LoadingButton from "@mui/lab/LoadingButton";
+import { accountApiSlice } from "../../features/Account/accountApiSlice";
+import * as Yup from "yup";
+import useFormValidator from "../../hooks/useFormValidator";
 
 function PaymentRequestFormDialog() {
+    const { list: paymentRequestList, loading: paymentRequestLoading } = useSelector(state => state.paymentRequest);
+    const debtorList = paymentRequestList?.map((p) => {
+        return {
+            accountName: p.toAccountName,
+            accountNumber: p.toAccountNumber,
+        }
+    }).filter((account, index, self) =>
+        index === self.findLastIndex((t) => (
+            t.accountNumber === account.accountNumber
+        ))
+    );
+
+    const [createPaymentRequest, { isLoading, isError, isSuccess }] = useCreatePaymentRequestMutation();
+    
+    const [ getAccountByAccountNumber ] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+
+    const [toAccountNumber, setToAccountNumber] = React.useState('');
+    const [toAccountName, setToAccountName] = React.useState('');
+    const [amount, setAmount] = React.useState('');
+    const [content, setContent] = React.useState('');
+    const [toAccountErrMsg, setToAccountErrMsg] = React.useState('');
+    const [msg, setMsg] = React.useState('');
+
+    const handleToAccountNumberInput = (e) => {
+        e.preventDefault();
+        setToAccountNumber(e.target.value);
+    }
+    const handleAmountInput = (e) => {
+        e.preventDefault();
+        const value = e.target.value;
+        setAmount(value? Number.parseInt(value) : '');
+    }
+    const handleContentInput = (e) => {
+        e.preventDefault();
+        setContent(e.target.value);
+    }
+    const onSetToAccount = (toAccountNumber, toAccountName) => {
+        setToAccountName(toAccountName);
+        setToAccountNumber(toAccountNumber);
+    }
+
+    const resetForm = () => {
+        setToAccountName('');
+        setToAccountNumber('');
+        setAmount('');
+        setContent('');
+    }
+
     const [open, setOpen] = React.useState(false);
 
     const handleClickOpen = () => {
@@ -19,10 +74,62 @@ function PaymentRequestFormDialog() {
     const handleClose = (event, reason) => {
         if (reason && reason === "backdropClick") return;
         setOpen(false);
+        resetForm();
     };
+
+    const handleToAccountNumberInputBlur = async (e) => {
+        if (toAccountNumber) {
+            try {
+                const response = await getAccountByAccountNumber(toAccountNumber);
+                const accountName = response.data.data.accountName;
+                setToAccountName(accountName? accountName : '');
+            } catch (err) {
+                console.log(err);
+                setMsg('');
+                if(!err.success){
+                    setToAccountErrMsg(err.data.errors?.join('</br>'));
+                } else {
+                    setToAccountErrMsg("Không thể thực hiện.");
+                }
+            }
+        }
+    }
+
+    const createPaymentRequestSchema = Yup.object().shape({
+        toAccountName: Yup.string().required("Số tài khoản là bắt buộc."),
+        amount: Yup.number("Số tiền phải là số.").min(0, "Số tiền không được nhỏ hơn 0"),
+    });
+    const { errors, texts, validate } = useFormValidator(createPaymentRequestSchema);
+
+    const canSubmit = toAccountName && toAccountNumber && amount;
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const data = await validate({ toAccountName, amount });
+        if (data === null) return;
+        try {
+            await createPaymentRequest({
+                toAccountName,
+                toAccountNumber,
+                amount,
+                content
+            }).unwrap();
+            setMsg("Gửi nhắc nợ thành công.")
+        } catch (err) {
+            setMsg(err.message);
+        }
+        setOpen(false);
+        resetForm();
+    }
 
     return (
         <div>
+            {(isError || isSuccess) &&
+                <MessageAlert
+                    message={msg}
+                    hidden={false}
+                    severity={isError? "error" : "success"}
+                ></MessageAlert>
+            }
             <Button variant="outlined" onClick={handleClickOpen}>
                 Tạo nhắc nợ mới
             </Button>
@@ -44,8 +151,17 @@ function PaymentRequestFormDialog() {
                             label="Số tài khoản người nợ"
                             id="account-number"
                             autoComplete="account-number"
+                            value={toAccountNumber}
+                            onChange={handleToAccountNumberInput}
+                            onBlur={handleToAccountNumberInputBlur}
+                            error={toAccountErrMsg !== '' || errors('toAccountNumber')}
+                            helperText={toAccountErrMsg? toAccountErrMsg : texts('toAccountNumber')}
                         />
-                        <AccountListDialog></AccountListDialog>
+                        <AccountListDialog
+                            onSetAccount={onSetToAccount}
+                            accountList={debtorList}
+                            loading={paymentRequestLoading}
+                        ></AccountListDialog>
                         <TextField
                             margin="normal"
                             fullWidth
@@ -53,6 +169,7 @@ function PaymentRequestFormDialog() {
                             label="Tên người nợ"
                             id="name"
                             disabled={true}
+                            value={toAccountName}
                         />
                         <TextField
                             margin="normal"
@@ -62,6 +179,10 @@ function PaymentRequestFormDialog() {
                             label="Số tiền (đ)"
                             id="amount"
                             type="number"
+                            value={amount}
+                            onChange={handleAmountInput}
+                            error={errors('amount')}
+                            helperText={texts('amount')}
                         />
                         <TextField
                             margin="normal"
@@ -72,12 +193,18 @@ function PaymentRequestFormDialog() {
                             label="Nội dung nhắc nợ"
                             id="memo-information"
                             autoComplete="memo-information"
+                            value={content}
+                            onChange={handleContentInput}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Hủy</Button>
-                    <Button onClick={handleClose}>Gửi nhắc nợ</Button>
+                    <LoadingButton
+                        onClick={handleSubmit}
+                        loading={isLoading}
+                        disabled={!canSubmit}
+                    >Gửi nhắc nợ</LoadingButton>
                 </DialogActions>
             </Dialog>
         </div>
