@@ -9,9 +9,17 @@ export const transferApiSlice = apiSlice.injectEndpoints({
                 body: params
             }),
         }),
+        executeExternalTransfer: builder.mutation({
+            query: (params) => ({
+                url: `api/transfer/external`,
+                method: "POST",
+                body: params
+            }),
+        }),
     }),
 });
 
 export const {
     useExecuteInternalTransferMutation,
+    useExecuteExternalTransferMutation,
 } = transferApiSlice;

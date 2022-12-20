@@ -90,7 +90,7 @@ function InternalTransferForm(props) {
         setContent('');
     }
 
-    const canSubmit = toAccountName && toAccountNumber && amount;
+    const canSubmit = fromAccount && toAccountName && toAccountNumber && amount;
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = await validate({ fromAccount, toAccountNumber, amount, chargeCode });
@@ -110,7 +110,6 @@ function InternalTransferForm(props) {
             resetForm();
         } catch (err) {
             setMsg('');
-            console.log(err);
             if(!err.success && err.data){
                 setMsg(err.data?.errors?.join('</br>'));
             } else {
@@ -233,11 +232,13 @@ function InternalTransferForm(props) {
                         sx={{
                             textAlign: "left",
                         }}
+                        error={errors("chargeCode")}
                     >
                         {Object.keys(CHARGE_CODE).map((c, idx) => {
                             return <MenuItem value={c} key={idx}>{CHARGE_CODE[c]}</MenuItem>
                         })}
                     </Select>
+                    <FormHelperText>{texts("chargeCode")}</FormHelperText>
                 </FormControl>
                 <LoadingButton
                     type="submit"
