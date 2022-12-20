@@ -3,6 +3,8 @@ import pageReducer from "../features/Page/pageSlice";
 import authReducer from "../features/Auth/authSlice";
 import userReducer from "../features/User/userSlice";
 import paymentRequestReducer from "../features/PaymentRequest/paymentRequestSlice";
+import accountReducer from "../features/Account/accountSlice";
+import recipientReducer from "../features/Recipient/recipientSlice";
 import { apiSlice } from "./apiSlice";
 
 const store = configureStore({
@@ -12,6 +14,8 @@ const store = configureStore({
         auth: authReducer,
         user: userReducer,
         paymentRequest: paymentRequestReducer,
+        account: accountReducer,
+        recipient: recipientReducer,
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware({

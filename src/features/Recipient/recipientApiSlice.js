@@ -1,4 +1,6 @@
 import { apiSlice } from "../../app/apiSlice";
+import { setRecipientList, setRecipientListStatus } from "./recipientSlice";
+import { selectCustomerId } from "../Auth/authSlice";
 
 export const recipientApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -7,7 +9,21 @@ export const recipientApiSlice = apiSlice.injectEndpoints({
                 url: `api/beneficiaries?customerId=${customerId}`,
                 method: "GET",
             }),
-            providesTags: ["Recipient"]
+            providesTags: ["Recipient"],
+            async onQueryStarted(id, { dispatch, queryFulfilled, getState }) {
+                const currentCustomerId = selectCustomerId(getState());
+                if (currentCustomerId === id) {
+                    dispatch(setRecipientListStatus({ isLoading: true, isError: false }));
+                    try {
+                        const {data} = await queryFulfilled;
+                        dispatch(setRecipientList(data));
+                        dispatch(setRecipientListStatus({ isLoading: false }));
+                    } catch (err) {
+                        dispatch(setRecipientList([]));
+                        dispatch(setRecipientListStatus({ isLoading: false, isError: true }));
+                    }
+                }
+            }
         }),
         addRecipient: builder.mutation({
             query: (body) => ({

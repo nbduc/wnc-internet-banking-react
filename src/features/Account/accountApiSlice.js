@@ -1,4 +1,6 @@
 import { apiSlice } from "../../app/apiSlice";
+import { selectCustomerId } from "../Auth/authSlice";
+import { setAccountList, setAccountListStatus } from "./accountSlice";
 
 export const accountApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -9,6 +11,20 @@ export const accountApiSlice = apiSlice.injectEndpoints({
             }),
             transformResponse: (response) => response.data,
             transformErrorResponse: (response) => response.data,
+            async onQueryStarted(id, { dispatch, queryFulfilled, getState }) {
+                const currentCustomerId = selectCustomerId(getState());
+                if (currentCustomerId === id) {
+                    dispatch(setAccountListStatus({ isLoading: true, isError: false }));
+                    try {
+                        const {data} = await queryFulfilled;
+                        dispatch(setAccountList(data));
+                        dispatch(setAccountListStatus({ isLoading: false }));
+                    } catch (err) {
+                        dispatch(setAccountList([]));
+                        dispatch(setAccountListStatus({ isLoading: false, isError: true }));
+                    }
+                }
+            }
         }),
         createAccount: builder.mutation({
             query: (params) => ({
@@ -60,4 +76,5 @@ export const {
     useGetAccountsByEmailQuery,
     useGetTransactionHistoryByAccountNumberQuery,
     useGetAccountByAccountNumberQuery,
+    useGetMyAccountsQuery,
 } = accountApiSlice;

@@ -1,13 +1,14 @@
 import { Grid } from "@mui/material";
 import ControlledAccordion from "../../components/ControlledAccordion";
 import AccountCard from "../../components/AccountCard/index.js";
-import { useGetAccountsByCustomerIdQuery } from "../../features/Account/accountApiSlice";
 import { useSelector } from "react-redux";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import { selectAccountList, selectAccountListStatus } from "../../features/Account/accountSlice";
 
 export default function HomePage() {
-    const userId = useSelector(state => state.auth.currentUser.userId);
-    const { data: accountList, isLoading } = useGetAccountsByCustomerIdQuery(userId);
+    const accountList = useSelector(selectAccountList);
+    const {isLoading} = useSelector(selectAccountListStatus)
+
     return (
         <>
             <LoadingBackdrop open={isLoading} />

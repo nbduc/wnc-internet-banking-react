@@ -41,16 +41,13 @@ function PaymentRequestFormDialog() {
     const [msg, setMsg] = React.useState('');
 
     const handleToAccountNumberInput = (e) => {
-        e.preventDefault();
         setToAccountNumber(e.target.value);
     }
     const handleAmountInput = (e) => {
-        e.preventDefault();
         const value = e.target.value;
         setAmount(value? Number.parseInt(value) : '');
     }
     const handleContentInput = (e) => {
-        e.preventDefault();
         setContent(e.target.value);
     }
     const onSetToAccount = (toAccountNumber, toAccountName) => {
@@ -84,7 +81,8 @@ function PaymentRequestFormDialog() {
             try {
                 const response = await getAccountByAccountNumber(toAccountNumber).unwrap();
                 const accountName = response.data?.accountName;
-                setToAccountName(accountName? accountName : '');
+                setToAccountName(accountName ? accountName : '');
+                setToAccountErrMsg("");
             } catch (err) {
                 if (!err.success) {
                     setToAccountErrMsg(err.data.errors?.join('</br>'));
@@ -114,16 +112,16 @@ function PaymentRequestFormDialog() {
                 content
             }).unwrap();
             setMsg("Gửi nhắc nợ thành công.")
+            setOpen(false);
+            resetForm();
         } catch (err) {
             setMsg('');
-            if(!err.success){
+            if(!err.success && err.data){
                 setMsg(err.data.errors?.join('</br>'));
             } else {
                 setMsg("Không thể thực hiện.");
             }
         }
-        setOpen(false);
-        resetForm();
     }
 
     return (

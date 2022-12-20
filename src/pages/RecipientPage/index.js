@@ -11,12 +11,13 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
-import { useGetRecipientsByCustomerIdQuery } from "../../features/Recipient/recipientApiSlice";
 import { useSelector } from "react-redux";
 import EditRecipientDetailsDialog from "../../components/EditRecipientDetailsDialog";
 import DeleteRecipientDetailsDialog from "../../components/DeleteRecicpientDialog";
 import { useMemo } from "react";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
+import { selectRecipientListStatus } from "../../features/Recipient/recipientSlice";
+import { selectRecipientList } from "../../features/Recipient/recipientSlice";
 
 const columns = [
     { id: "nickName", label: "Tên người nhận", minWidth: 170 },
@@ -51,8 +52,8 @@ function RecipientList() {
         setPage(0);
     };
 
-    const userId = useSelector(state => state.auth.currentUser.userId);
-    const { data: recipients = [], isFetching } = useGetRecipientsByCustomerIdQuery(userId);
+    const recipients = useSelector(selectRecipientList);
+    const {isLoading} = useSelector(selectRecipientListStatus);
 
     const sortedRecipients = useMemo(() => {
         const sortedRecipients = recipients.slice();
@@ -72,7 +73,7 @@ function RecipientList() {
 
     return (
         <>
-            <LoadingBackdrop open={isFetching} />
+            <LoadingBackdrop open={isLoading} />
             {!rows && "Không có người nhận nào."}
             {rows &&
                 <Paper sx={{ width: "100%" }}>

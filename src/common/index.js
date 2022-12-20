@@ -103,6 +103,11 @@ export const PAYMENT_REQUEST_STATUSES = {
     "DELETED": "Đã xóa"
 }
 
+export const CHARGE_CODE = {
+    "EXCLUDE": "Người nhận trả phí",
+    "INCLUDE": "Người gửi trả phí"
+}
+
 export const dateTimeFormater = (dateTime) => {
     return new Date(dateTime).toLocaleString("vi-VN", { hour12: false });
 }

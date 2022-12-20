@@ -29,11 +29,22 @@ import PartnerTransactionHistoryPage from "./pages/PartnerTransactionHistory";
 import RequireAuth from "./components/RequireAuth";
 import Unauthorized from "./pages/Unauthorized";
 import PersistLogin from "./components/PersistLogin";
+import { selectCustomerId } from "./features/Auth/authSlice";
+import { useGetAccountsByCustomerIdQuery } from "./features/Account/accountApiSlice";
+import { useGetRecipientsByCustomerIdQuery } from "./features/Recipient/recipientApiSlice";
 
 function App() {
     const dispatch = useDispatch();
     const location = useLocation();
     const pageListItems = useSelector(state => state.pageList.items);
+
+    const customerId = useSelector(selectCustomerId);
+    useGetAccountsByCustomerIdQuery(customerId, {
+        skip: customerId ? false : true
+    });
+    useGetRecipientsByCustomerIdQuery(customerId, {
+        skip: customerId ? false : true
+    });
 
     useEffect(() => {
         dispatch(setUserPageList(userListItems));
