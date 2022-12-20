@@ -83,7 +83,7 @@ function PaymentRequestFormDialog() {
         if (toAccountNumber) {
             try {
                 const response = await getAccountByAccountNumber(toAccountNumber).unwrap();
-                const accountName = response.data?.data?.accountName;
+                const accountName = response.data?.accountName;
                 setToAccountName(accountName? accountName : '');
             } catch (err) {
                 if (!err.success) {

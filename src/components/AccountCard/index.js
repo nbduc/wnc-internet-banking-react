@@ -17,6 +17,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { useState, forwardRef, useEffect } from "react";
 import TransactionHistoryList from "../TransactionHistoryList";
 import { accountApiSlice } from "../../features/Account/accountApiSlice";
+import { currencyFormatter } from "../../common";
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -36,10 +37,6 @@ function AccountCard({ accountName, accountNumber, accountBalance }) {
         }
     }, [isSuccess, transactionHistoryResponse]);
 
-    const currencyFormatter = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    });
     const [anchorEl, setAnchorEl] = useState(null);
     const actionListOpen = Boolean(anchorEl);
     const actionListHandleClick = (event) => {
@@ -95,7 +92,7 @@ function AccountCard({ accountName, accountNumber, accountBalance }) {
                             Số dư hiện tại
                         </Typography>
                         <Typography variant="body" color="text.primary">
-                            {currencyFormatter.format(accountBalance)}
+                            {currencyFormatter(accountBalance)}
                         </Typography>
                     </Box>
                 </CardContent>

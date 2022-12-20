@@ -7,6 +7,8 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
+import LinearIndeterminate from "../LinearIndeterminate";
 import PaymentRequestCancelFormDialog from "../PaymentRequestCancelFormDialog";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -15,38 +17,42 @@ import "@fontsource/roboto/700.css";
 import { useSelector } from "react-redux";
 import { selectCustomerId } from "../../features/Auth/authSlice";
 import { useGetPaymentRequestByCustomerIdQuery } from "../../features/PaymentRequest/paymentRequestApiSlice";
-import { Typography } from "@mui/material";
-import { PAYMENT_REQUEST_STATUSES } from "../../common";
+
+import {
+    dateTimeFormater,
+    paymentRequestStatusFormatter,
+    currencyFormatter,
+} from "../../common";
 
 const columns = [
-    { id: "createdDate", label: "Thời gian", minWidth: 50 },
+    { id: "createdDate", label: "Thời gian", minWidth: 50, format: dateTimeFormater },
     { id: "toAccountName", label: "Tên người nợ", minWidth: 170 },
-    { id: "toAccountNumber", label: "Số tài khoản", minWidth: 100 },
+    { id: "amount", label: "Số tiền", minWidth: 50, format: currencyFormatter},
     { id: "content", label: "Nội dung nhắc nợ", minWidth: 200, },
-    { id: "status", label: "Trạng thái", minWidth: 50, },
+    { id: "status", label: "Trạng thái", minWidth: 50, format: paymentRequestStatusFormatter },
     { id: "actions", label: "Thao tác", minWidth: 50, },
 ];
 
-function createData(id, createdDate, toAccountName, toAccountNumber, content, status) {
-    return { id, createdDate, toAccountName, toAccountNumber, content, status };
+function createData(id, createdDate, toAccountName, toAccountNumber, amount, content, status) {
+    return { id, createdDate, toAccountName, toAccountNumber, amount, content, status };
 }
 
 function PaymentRequestList() {
     const customerId = useSelector(selectCustomerId);
     const {
         data: paymentRequests,
-        isLoading: isPaymentRequestsLoading,
-        isError: isPaymentRequestError
+        isLoading,
     } = useGetPaymentRequestByCustomerIdQuery(customerId);
 
-    const rows = paymentRequests ? paymentRequests?.map((p, idx) => {
+    const rows = paymentRequests ? paymentRequests.map((p, idx) => {
         return createData(
             p.id,
-            new Date(p.createdDate).toLocaleString("vi-VN"),
+            p.createdDate,
             p.toAccountName,
             p.toAccountNumber,
+            p.amount,
             p.content,
-            PAYMENT_REQUEST_STATUSES[p.status]);
+            p.status);
     }) : [];
 
     const [page, setPage] = React.useState(0);
@@ -62,9 +68,10 @@ function PaymentRequestList() {
     };
 
     return (
-        <Box sx={{ width: "100%" }}>
+        <Box sx={{ width: "100%", display: "flex", flexDirection: "column"  }}>
+            {isLoading && <LinearIndeterminate/>}
             {rows.length === 0 &&
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{marginTop: 3}}>
                     Không có nhắc nợ nào.
                 </Typography>
             }
@@ -108,7 +115,9 @@ function PaymentRequestList() {
                                                                 key={idx}
                                                                 align={column.align}
                                                             >
-                                                                <PaymentRequestCancelFormDialog id={row.id}></PaymentRequestCancelFormDialog>
+                                                                {row.status !== "DELETED" && 
+                                                                    <PaymentRequestCancelFormDialog id={row.id}></PaymentRequestCancelFormDialog>
+                                                                }
                                                             </TableCell>
                                                         );
                                                     }
@@ -118,10 +127,7 @@ function PaymentRequestList() {
                                                             key={idx}
                                                             align={column.align}
                                                         >
-                                                            {column.format &&
-                                                            typeof value === "number"
-                                                                ? column.format(value)
-                                                                : value}
+                                                            {column.format ? column.format(value) : value}
                                                         </TableCell>
                                                     );
                                                 })}

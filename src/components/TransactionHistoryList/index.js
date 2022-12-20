@@ -7,12 +7,9 @@ import {
 } from "@mui/material";
 import LinearIndeterminate from "../LinearIndeterminate";
 import { TRANSACTION_TYPES, TRANSACTION_STATUSES } from "../../common";
+import { currencyFormatter, dateTimeFormater } from "../../common";
 
 export default function TransactionHistoryList({history, loading}) {
-    const currencyFormatter = new Intl.NumberFormat("vi-VN", {
-        style: "currency",
-        currency: "VND",
-    });
     return (
         <>
             {loading && <LinearIndeterminate/>}
@@ -41,7 +38,7 @@ export default function TransactionHistoryList({history, loading}) {
                                                 variant="body2"
                                                 color="text.secondary"
                                             >
-                                                {new Date(item.transactionDate).toLocaleString('vi-VN', { hour12: false })}
+                                                {dateTimeFormater(item.transactionDate)}
                                             </Typography>
                                             <Typography
                                                 component="div"
@@ -64,7 +61,7 @@ export default function TransactionHistoryList({history, loading}) {
                                                 variant="body1"
                                                 color="text.primary"
                                             >
-                                                {currencyFormatter.format(item.amount)}
+                                                {currencyFormatter(item.amount)}
                                             </Typography>
                                         </Grid>
                                     </Grid>

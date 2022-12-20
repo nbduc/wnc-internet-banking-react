@@ -97,8 +97,21 @@ export const TRANSACTION_STATUSES = {
 }
 
 export const PAYMENT_REQUEST_STATUSES = {
-    "DRAFT": "Nháp",
+    "DRAFT": "draft",
     "SENT": "Đã gửi",
     "PAID": "Đã trả",
     "DELETED": "Đã xóa"
 }
+
+export const dateTimeFormater = (dateTime) => {
+    return new Date(dateTime).toLocaleString("vi-VN", { hour12: false });
+}
+
+export const paymentRequestStatusFormatter = (status) => {
+    return PAYMENT_REQUEST_STATUSES[status];
+}
+
+export const currencyFormatter = (currency) => new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+}).format(currency);

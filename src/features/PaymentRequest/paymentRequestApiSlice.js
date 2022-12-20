@@ -8,6 +8,11 @@ export const paymentRequestApiSlice = apiSlice.injectEndpoints({
                 method: "GET",
             }),
             providesTags: ["PaymentRequests"],
+            transformResponse: (response) => {
+                return response.sort((a, b) => {
+                    return new Date(b.createdDate) - new Date(a.createdDate);
+                })
+            },
         }),
         createPaymentRequest: builder.mutation({
             query: (params) => ({
@@ -25,6 +30,18 @@ export const paymentRequestApiSlice = apiSlice.injectEndpoints({
             }),
             invalidatesTags: ["PaymentRequests"],
         }),
+        getDebtList: builder.query({
+            query: () => ({
+                url: `api/debt-reminders/my-debts`,
+                method: "GET"
+            }),
+            providesTags: ["Debts"],
+            transformResponse: (response) => {
+                return response.sort((a, b) => {
+                    return new Date(b.createdDate) - new Date(a.createdDate);
+                })
+            },
+        })
     }),
 });
 
@@ -32,4 +49,5 @@ export const {
     useGetPaymentRequestByCustomerIdQuery,
     useCreatePaymentRequestMutation,
     useDeletePaymentRequestMutation,
+    useGetDebtListQuery,
 } = paymentRequestApiSlice;
