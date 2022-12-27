@@ -36,4 +36,5 @@ export const employeeApiSlice = apiSlice.injectEndpoints({
 export const {
     useGetAllEmployeesQuery,
     useCreateEmployeeMutation,
+    useEditEmployeeMutation,
 } = employeeApiSlice;

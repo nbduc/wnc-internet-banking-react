@@ -12,16 +12,22 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
+import { FormHelperText } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { STAFF_ROLES } from "../../common";
-import { useCreateEmployeeMutation } from "../../features/Employee/employeeApiSlice";
+import { useEditEmployeeMutation } from "../../features/Employee/employeeApiSlice";
+import MessageAlert from "../MessageAlert";
+import * as Yup from "yup";
+import useFormValidator from "../../hooks/useFormValidator";
 
 function EditEmployeeDetailsDialog({ employee, ...props }) {
+    const id = employee.id;
     const [role, setRole] = React.useState(employee? employee.role : "TELLER");
     const [firstName, setFirstName] = React.useState(employee ? employee.firstName : "");
     const [lastName, setLastName] = React.useState(employee ? employee.lastName : "");
     const [email, setEmail] = React.useState(employee ? employee.email : "");
     const [phone, setPhone] = React.useState(employee ? employee.phone : "");
+    const [msg, setMsg] = React.useState("");
     const handleRoleInput = (event) => {
         setRole(event.target.value);
     };
@@ -48,14 +54,57 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
         setOpen(false);
     };
 
-    
+    const phoneRegExp = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+    const editEmployeeSchema = Yup.object().shape({
+        role: Yup.string().required("Vai trò là bắt buộc."),
+        firstName: Yup.string().required("Tên là bắt buộc."),
+        lastName: Yup.string().required("Họ là bắt buộc."),
+        email: Yup.string().email('Email không hợp lệ').required("Email là bắt buộc."),
+        phone: Yup.string().matches(phoneRegExp, 'Số điện thoại không hợp lệ').required("Số điện thoại là bắt buộc."),
+    });
+    const { errors, texts, validate } = useFormValidator(editEmployeeSchema);
+
+    const [editEmployee, { isLoading, isError, isSuccess}] = useEditEmployeeMutation();
     const canSubmit = role && firstName && lastName && email && phone;
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        const data = await validate({
+            role,
+            firstName,
+            lastName,
+            email,
+            phone
+        });
+        if (data === null) return;
+        try {
+            await editEmployee({
+                id,
+                role,
+                firstName,
+                lastName,
+                email,
+                phone
+            }).unwrap();
+            setMsg("Cập nhật thành công.");
+            setOpen(false);
+        } catch (err) {
+            setMsg('');
+            if(!err.success){
+                setMsg(err.data.errors?.join('</br>'));
+            } else {
+                setMsg("Không thể thực hiện.");
+            }
+        }
     }
     return (
         <>
+            {(isError || isSuccess) &&
+                <MessageAlert
+                    message={msg}
+                    hidden={false}
+                    severity={isError? "error" : "success"}
+                ></MessageAlert>
+            }
             <IconButton aria-label="edit" onClick={handleClickOpen} {...props}>
                 <EditIcon />
             </IconButton>
@@ -76,10 +125,12 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
                                 sx={{
                                     textAlign: "left",
                                 }}
+                                error={errors("role")}
                             >
                                 {STAFF_ROLES && Object.entries(STAFF_ROLES).map((r, idx) => 
                                     <MenuItem key={idx} value={r[0]}>{ r[1] }</MenuItem>
                                 )}
+                                <FormHelperText>{texts("role")}</FormHelperText>
                             </Select>
                         </FormControl>
                         <TextField
@@ -92,6 +143,8 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
                             autoComplete="last-name"
                             value={lastName}
                             onChange={handleLastNameInput}
+                            error={errors("lastName")}
+                            helperText={texts("lastName")}
                         />
                         <TextField
                             margin="normal"
@@ -103,6 +156,8 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
                             autoComplete="first-name"
                             value={firstName}
                             onChange={handleFirstNameInput}
+                            error={errors("firstName")}
+                            helperText={texts("firstName")}
                         />
                         <TextField
                             margin="normal"
@@ -114,6 +169,8 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
                             autoComplete="email"
                             value={email}
                             onChange={handleEmailInput}
+                            error={errors("email")}
+                            helperText={texts("email")}
                         />
                         <TextField
                             margin="normal"
@@ -125,12 +182,14 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
                             autoComplete="phone"
                             value={phone}
                             onChange={handlePhoneInput}
+                            error={errors("phone")}
+                            helperText={texts("phone")}
                         />
                     </Box>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Thoát</Button>
-                    <LoadingButton disabled={!canSubmit} onClick={handleClose}>OK</LoadingButton>
+                    <LoadingButton loading={isLoading} disabled={!canSubmit} onClick={handleSubmit}>OK</LoadingButton>
                 </DialogActions>
             </Dialog>
         </>
