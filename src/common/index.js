@@ -108,6 +108,11 @@ export const CHARGE_CODE = {
     "INCLUDE": "Người gửi trả phí"
 }
 
+export const STAFF_ROLES = {
+    "ADMINISTRATOR": "Quản trị viên",
+    "TELLER": "Nhân viên"
+}
+
 export const dateTimeFormater = (dateTime) => {
     return new Date(dateTime).toLocaleString("vi-VN", { hour12: false });
 }
