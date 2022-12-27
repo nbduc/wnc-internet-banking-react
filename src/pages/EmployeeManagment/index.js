@@ -8,17 +8,16 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import IconButton from "@mui/material/IconButton";
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import AddEmployeeDialog from "../../components/AddEmployeeDialog";
 import EditEmployeeDetailsDialog from "../../components/EditEmployeeDetailsDialog";
-import DeleteIcon from "@mui/icons-material/Delete";
 import { useGetAllEmployeesQuery } from "../../features/Employee/employeeApiSlice";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { Typography } from "@mui/material";
+import DeleteEmployeeDialog from "../../components/DeleteEmployeeDialog";
 
 const columns = [
     { id: "id", label: "Mã nhân viên", minWidth: 30 },
@@ -102,9 +101,7 @@ function EmployeeList() {
                                                         align={column.align}
                                                     >
                                                         <EditEmployeeDetailsDialog employee={row}></EditEmployeeDetailsDialog>
-                                                        <IconButton>
-                                                            <DeleteIcon />
-                                                        </IconButton>
+                                                        <DeleteEmployeeDialog employee={row}></DeleteEmployeeDialog>
                                                     </TableCell>
                                                 );
                                             }

@@ -12,6 +12,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
 import { FormHelperText } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import { STAFF_ROLES } from "../../common";
@@ -105,9 +106,11 @@ function EditEmployeeDetailsDialog({ employee, ...props }) {
                     severity={isError? "error" : "success"}
                 ></MessageAlert>
             }
-            <IconButton aria-label="edit" onClick={handleClickOpen} {...props}>
-                <EditIcon />
-            </IconButton>
+            <Tooltip title="Chỉnh sửa">
+                <IconButton aria-label="edit" onClick={handleClickOpen} {...props}>
+                    <EditIcon />
+                </IconButton>
+            </Tooltip>
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Thông tin nhân viên</DialogTitle>
                 <DialogContent>
