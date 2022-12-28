@@ -104,8 +104,8 @@ export const PAYMENT_REQUEST_STATUSES = {
 }
 
 export const CHARGE_CODE = {
-    "EXCLUDE": "Người nhận trả phí",
-    "INCLUDE": "Người gửi trả phí"
+    0: "Người nhận trả phí",
+    1: "Người gửi trả phí"
 }
 
 export const STAFF_ROLES = {

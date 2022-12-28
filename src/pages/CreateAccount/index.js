@@ -2,7 +2,6 @@ import { Box, TextField, Typography, Paper } from "@mui/material";
 import LoadingButton from "@mui/lab/LoadingButton";
 import MessageAlert from "../../components/MessageAlert";
 import { useState } from "react";
-import { useCreateAccountMutation } from "../../features/Account/accountApiSlice";
 import { useCreateUserMutation } from "../../features/User/userApiSlice";
 import { useCreateCustomerMutation } from "../../features/Customer/customerApiSlice";
 import * as Yup from "yup";
@@ -43,12 +42,8 @@ function CreateAccountPage() {
     const [createCustomer, {
         isLoading: isCreateCustomerLoading,
         isError: isCreateCustomerError,
+        isSuccess: createCustomerSuccess
     }] = useCreateCustomerMutation();
-    const [createAccount, {
-        isLoading: isCreateAccountLoading,
-        isSuccess: isCreateAccountSuccess,
-        isError: isCreateAccountError,
-    }] = useCreateAccountMutation();
 
     const phoneRegExp = /(84|0[3|5|7|8|9])+([0-9]{8})\b/g;
     const createAccountSchema = Yup.object().shape({
@@ -68,8 +63,18 @@ function CreateAccountPage() {
     });
     const { errors, texts, validate } = useFormValidator(createAccountSchema);
 
+    const resetForm = () => {
+        setEmail("");
+        setPassword("");
+        setConfirmPassword("");
+        setFirstName("");
+        setLastName("");
+        setPhone("");
+        setMsg("");
+    }
+
     const canSubmit = email && password && confirmPassword && firstName && lastName && phone;
-    const isLoading = isCreateUserLoading || isCreateCustomerLoading || isCreateAccountLoading;
+    const isLoading = isCreateUserLoading || isCreateCustomerLoading;
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = await validate({
@@ -86,18 +91,14 @@ function CreateAccountPage() {
                 email,
                 password
             }).unwrap();
-            const newCustomer = await createCustomer({
+            await createCustomer({
                 userId: newUser?.data,
                 firstName,
                 lastName,
                 email,
                 phone,
             }).unwrap();
-            await createAccount({
-                customerId: newCustomer?.data,
-                accountName: "Tài khoản thanh toán 1",
-                currentBalance: 0
-            }).unwrap();
+            resetForm();
         } catch (err) {
             setMsg('');
             if(!err.success){
@@ -108,19 +109,17 @@ function CreateAccountPage() {
         }
     };
     const loadingIndicator =
-        isCreateUserLoading ? "...Đang tạo tài khoản người dùng" :
-            isCreateCustomerLoading ? "...Đang thiết lập thông tin khách hàng" :
-                isCreateAccountLoading ? "...Đang tạo tài khoản thanh toán tự động." : "...Loading";
+        isCreateUserLoading ? "...Đang tạo tài khoản người dùng" : "...Đang thiết lập thông tin khách hàng" ;
     return (
         <>
-            {(isCreateUserError || isCreateCustomerError || isCreateAccountError) && (
+            {(isCreateUserError || isCreateCustomerError) && (
                 <MessageAlert
                     message={msg? msg : "Đã có lỗi."}
                     hidden={false}
                     severity="error"
                 ></MessageAlert>
             )}
-            {isCreateAccountSuccess && (
+            {createCustomerSuccess && (
                 <MessageAlert
                     message={"Tạo tài khoản khách hàng thành công."}
                     hidden={false}

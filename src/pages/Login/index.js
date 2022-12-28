@@ -72,6 +72,7 @@ function LoginPage(props) {
         event.preventDefault();
 
         const reCaptchaToken = captchaRef.current?.getValue();
+        setErrMsg('');
 
         //data and error
         try {
@@ -80,7 +81,6 @@ function LoginPage(props) {
         } catch (err) {
             setEmail('');
             setPassword('');
-            setErrMsg('');
             setChecked(false);
             captchaRef.current.reset();
             if (!err?.status) {

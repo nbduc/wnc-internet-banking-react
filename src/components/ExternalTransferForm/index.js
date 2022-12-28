@@ -36,7 +36,7 @@ function ExternalTransferForm(props) {
     const [toAccountName, setToAccountName] = useState("");
     const [amount, setAmount] = useState("");
     const [content, setContent] = useState("");
-    const [chargeCode, setChargeCode] = useState("EXCLUDE");
+    const [chargeCode, setChargeCode] = useState(0);
     const [toAccountErrMsg, setToAccountErrMsg] = useState('');
     const [msg, setMsg] = useState('');
     const handleFromAccountInput = (event) => {
@@ -86,7 +86,7 @@ function ExternalTransferForm(props) {
         fromAccount: Yup.string().required("Số tài khoản nguồn là bắt buộc."),
         toAccountNumber: Yup.string().required("Số tài khoản đích là bắt buộc."),
         amount: Yup.number("Số tiền phải là số.").min(0, "Số tiền không được nhỏ hơn 0"),
-        chargeCode: Yup.string().required("Hình thức thanh toán phí là bắt buộc."),
+        chargeCode: Yup.number().required("Hình thức thanh toán phí là bắt buộc."),
     });
     const { errors, texts, validate } = useFormValidator(createPaymentRequestSchema);
 

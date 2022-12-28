@@ -20,6 +20,7 @@ import { selectRecipientList } from "../../features/Recipient/recipientSlice";
 import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
 import { useExecuteInternalTransferMutation } from "../../features/Transfer/transferApiSlice";
+import OtpDialog from "../OtpDialog";
 
 function InternalTransferForm(props) {
     const accountList = useSelector(selectAccountList);
@@ -33,9 +34,15 @@ function InternalTransferForm(props) {
     const [toAccountName, setToAccountName] = useState("");
     const [amount, setAmount] = useState("");
     const [content, setContent] = useState("");
-    const [chargeCode, setChargeCode] = useState("EXCLUDE");
+    const [chargeCode, setChargeCode] = useState(0);
     const [toAccountErrMsg, setToAccountErrMsg] = useState('');
     const [msg, setMsg] = useState('');
+    const [orderNumber, setOrderNumber] = useState("");
+    const [otpDialogOpen, setOtpDialogOpen] = useState(false);
+    const handleOtpDialogClose = (event, reason) => {
+        if (reason && reason === "backdropClick") return;
+        setOtpDialogOpen(false);
+    };
     const handleFromAccountInput = (event) => {
         setFromAccount(event.target.value);
     };
@@ -50,7 +57,8 @@ function InternalTransferForm(props) {
         setContent(event.target.value);
     }
     const handleChargeCodeInput = (event) => {
-        setChargeCode(event.target.value);
+        const value = event.target.value;
+        setChargeCode(value? Number.parseInt(value) : '');
     }
     const handleToAccountNumberBlur = async (event) => {
         setToAccountName("");
@@ -79,7 +87,7 @@ function InternalTransferForm(props) {
         fromAccount: Yup.string().required("Số tài khoản nguồn là bắt buộc."),
         toAccountNumber: Yup.string().required("Số tài khoản đích là bắt buộc."),
         amount: Yup.number("Số tiền phải là số.").min(0, "Số tiền không được nhỏ hơn 0"),
-        chargeCode: Yup.string().required("Hình thức thanh toán phí là bắt buộc."),
+        chargeCode: Yup.number().required("Hình thức thanh toán phí là bắt buộc."),
     });
     const { errors, texts, validate } = useFormValidator(createPaymentRequestSchema);
 
@@ -97,7 +105,7 @@ function InternalTransferForm(props) {
         if (data === null) return;
         try {
             const { fromAccountName, fromAccountNumber } = JSON.parse(fromAccount);
-            await executeInternalTransfer({
+            const response = await executeInternalTransfer({
                 fromAccountNumber,
                 fromAccountName,
                 toAccountName,
@@ -106,11 +114,15 @@ function InternalTransferForm(props) {
                 content,
                 chargeCode
             }).unwrap();
-            setMsg("Chuyển tiền thành công.")
+            response.message ? setMsg(response.message) : setMsg("");
+            setOrderNumber(response.data);
+            setOtpDialogOpen(true);
             resetForm();
         } catch (err) {
             setMsg('');
-            if(!err.success && err.data){
+            if (err.message) {
+                setMsg(err.message);
+            } else if(!err.success && err.data){
                 setMsg(err.data?.errors?.join('</br>'));
             } else {
                 setMsg("Không thể thực hiện.");
@@ -132,6 +144,7 @@ function InternalTransferForm(props) {
                     severity={isError? "error" : "success"}
                 ></MessageAlert>
             }
+            <OtpDialog orderNumber={orderNumber} open={otpDialogOpen} onClose={handleOtpDialogClose}></OtpDialog>
             <Box
                 component="form"
                 onSubmit={handleSubmit}
