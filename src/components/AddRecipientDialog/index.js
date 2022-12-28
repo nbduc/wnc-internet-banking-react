@@ -17,10 +17,16 @@ import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
 import MessageAlert from "../MessageAlert";
 import { useGetAllBanksQuery } from "../../features/Bank/bankApiSlice";
+import { accountApiSlice } from "../../features/Account/accountApiSlice";
+import { useSelector } from "react-redux";
+import { selectCustomerId } from "../../features/Auth/authSlice";
 
 function AddRecipientDialog(props) {
     const { data: bankList } = useGetAllBanksQuery();
+    const customerId = useSelector(selectCustomerId);
     const [accountNumber, setAccountNumber] = React.useState("");
+    const [accountName, setAccountName] = React.useState("");
+    const [accountNameErrMsg, setAccountNameErrMsg] = React.useState("");
     const [nickName, setNickName] = React.useState("");
     const [bankId, setBankId] = React.useState("");
     const [msg, setMsg] = React.useState("");
@@ -32,6 +38,31 @@ function AddRecipientDialog(props) {
     };
     const handleBankInput = (event) => {
         setBankId(event.target.value);
+    }
+
+    const [getAccountByAccountNumber] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+    const getAndSetAccountName = async () => {
+        setAccountName("");
+        if (accountNumber && bankId) {
+            try {
+                const response = await getAccountByAccountNumber(accountNumber).unwrap();
+                const accountNameResponse = response.data?.accountName;
+                setAccountName(accountNameResponse ? accountNameResponse : '');
+                setAccountNameErrMsg("");
+            } catch (err) {
+                if (!err.success) {
+                    setAccountNameErrMsg(err.data.errors?.join('</br>'));
+                } else {
+                    setAccountNameErrMsg("Không thể thực hiện.");
+                }
+            }
+        }
+    }
+    const handleAccountNumberBlur = (event) => {
+        getAndSetAccountName();
+    }
+    const handleBankBlur = (event) => {
+        getAndSetAccountName();
     }
 
     const [open, setOpen] = React.useState(false);
@@ -53,10 +84,11 @@ function AddRecipientDialog(props) {
     const resetForm = () => {
         setAccountNumber("");
         setNickName("");
+        setBankId("");
     }
 
     const [ addRecipient, { isLoading, isError, isSuccess }] = useAddRecipientMutation();
-    const canSubmit = accountNumber && nickName;
+    const canSubmit = accountNumber && accountName && nickName && bankId && customerId;
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = await validate({
@@ -67,8 +99,10 @@ function AddRecipientDialog(props) {
         try {
             await addRecipient({
                 accountNumber,
+                accountName,
                 nickName,
-                bankId
+                bankId,
+                customerId,
             }).unwrap();
             setOpen(false);
             setMsg("Thêm người nhận thành công");
@@ -114,18 +148,7 @@ function AddRecipientDialog(props) {
                             onChange={handleAccountNumberInput}
                             error={errors("accountNumber")}
                             helperText={texts("accountNumber")}
-                        />
-                        <TextField
-                            margin="normal"
-                            required
-                            fullWidth
-                            name="nickName"
-                            label="Tên gợi nhớ"
-                            id="nickName"
-                            value={nickName}
-                            onChange={handleNickNameInput}
-                            error={errors("nickName")}
-                            helperText={texts("nickName")}
+                            onBlur={handleAccountNumberBlur}
                         />
                         <FormControl fullWidth required sx={{marginTop: 2, marginBottom: 1}}>
                             <InputLabel id="role-label">Ngân hàng</InputLabel>
@@ -141,6 +164,7 @@ function AddRecipientDialog(props) {
                                     textAlign: "left",
                                 }}
                                 error={errors("bankId")}
+                                onBlur={handleBankBlur}
                             >
                                 {bankList && bankList.map((bank, idx) => 
                                     <MenuItem key={idx} value={bank.bankId}>{ bank.bankName }</MenuItem>
@@ -148,6 +172,31 @@ function AddRecipientDialog(props) {
                             </Select>
                             <FormHelperText>{texts("bankId")}</FormHelperText>
                         </FormControl>
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="accountName"
+                            label="Tên tài khoản"
+                            id="accountName"
+                            autoComplete="accountName"
+                            value={accountName}
+                            disabled
+                            error={accountNameErrMsg !== ''}
+                            helperText={accountNameErrMsg}
+                        />
+                        <TextField
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="nickName"
+                            label="Tên gợi nhớ"
+                            id="nickName"
+                            value={nickName}
+                            onChange={handleNickNameInput}
+                            error={errors("nickName")}
+                            helperText={texts("nickName")}
+                        />
                     </Box>
                 </DialogContent>
                 <DialogActions>

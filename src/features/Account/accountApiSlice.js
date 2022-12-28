@@ -76,5 +76,4 @@ export const {
     useGetAccountsByEmailQuery,
     useGetTransactionHistoryByAccountNumberQuery,
     useGetAccountByAccountNumberQuery,
-    useGetMyAccountsQuery,
 } = accountApiSlice;
