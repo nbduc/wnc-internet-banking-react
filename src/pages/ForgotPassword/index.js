@@ -14,6 +14,7 @@ import MessageAlert from "../../components/MessageAlert";
 import { setEmailForgotPassword } from "../../features/User/userSlice";
 import * as yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
+import { useDispatch } from "react-redux";
 
 function ForgotPasswordPage(props) {
     const forgotPasswordSchema = yup.object().shape({
@@ -28,13 +29,14 @@ function ForgotPasswordPage(props) {
     const [errMsg, setErrMsg] = useState('');
 
     const [forgotPassword, { isLoading, isSuccess, isError }] = useForgotPasswordMutation();
+    const dispatch = useDispatch();
     const handleSubmit = async (event) => {
         event.preventDefault();
         const data = await validate({ email });
         if (data === null) return;
         try {
             await forgotPassword(email).unwrap();
-            setEmailForgotPassword(email);
+            dispatch(setEmailForgotPassword(email));
         } catch (err) {
             setErrMsg('');
             if(!err.success){

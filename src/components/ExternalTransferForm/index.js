@@ -21,6 +21,7 @@ import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
 import { CHARGE_CODE } from "../../common";
 import { useSelector } from "react-redux";
+import OtpDialog from "../OtpDialog";
 
 function ExternalTransferForm(props) {
     const accountList = useSelector(selectAccountList);
@@ -39,6 +40,12 @@ function ExternalTransferForm(props) {
     const [chargeCode, setChargeCode] = useState(0);
     const [toAccountErrMsg, setToAccountErrMsg] = useState('');
     const [msg, setMsg] = useState('');
+    const [orderNumber, setOrderNumber] = useState("");
+    const [otpDialogOpen, setOtpDialogOpen] = useState(false);
+    const handleOtpDialogClose = (event, reason) => {
+        if (reason && reason === "backdropClick") return;
+        setOtpDialogOpen(false);
+    };
     const handleFromAccountInput = (event) => {
         setFromAccount(event.target.value);
     };
@@ -104,7 +111,7 @@ function ExternalTransferForm(props) {
         if (data === null) return;
         try {
             const { fromAccountName, fromAccountNumber } = JSON.parse(fromAccount);
-            await executeExternalTransfer({
+            const response = await executeExternalTransfer({
                 bankId,
                 fromAccountNumber,
                 fromAccountName,
@@ -114,11 +121,15 @@ function ExternalTransferForm(props) {
                 content,
                 transferFeeType: chargeCode
             }).unwrap();
-            setMsg("Chuyển tiền thành công.")
+            response.message ? setMsg(response.message) : setMsg("");
+            setOrderNumber(response.data);
+            setOtpDialogOpen(true);
             resetForm();
         } catch (err) {
             setMsg('');
-            if(!err.success && err.data){
+            if (err.message) {
+                setMsg(err.message);
+            } else if(!err.success && err.data){
                 setMsg(err.data?.errors?.join('</br>'));
             } else {
                 setMsg("Không thể thực hiện.");
@@ -141,6 +152,7 @@ function ExternalTransferForm(props) {
                     severity={isError? "error" : "success"}
                 ></MessageAlert>
             }
+            <OtpDialog orderNumber={orderNumber} open={otpDialogOpen} onClose={handleOtpDialogClose}></OtpDialog>
             <Box
                 component="form"
                 onSubmit={handleSubmit}

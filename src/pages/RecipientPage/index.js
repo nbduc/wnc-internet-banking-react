@@ -18,6 +18,8 @@ import { useMemo } from "react";
 import LoadingBackdrop from "../../components/LoadingBackdrop";
 import { selectRecipientListStatus } from "../../features/Recipient/recipientSlice";
 import { selectRecipientList } from "../../features/Recipient/recipientSlice";
+import AddRecipientDialog from "../../components/AddRecipientDialog";
+import { Typography } from "@mui/material";
 
 const columns = [
     { id: "nickName", label: "Tên người nhận", minWidth: 170 },
@@ -74,8 +76,8 @@ function RecipientList() {
     return (
         <>
             <LoadingBackdrop open={isLoading} />
-            {!rows && "Không có người nhận nào."}
-            {rows &&
+            {rows?.length === 0 && <Typography variant="body1">Không có người nhận nào.</Typography>}
+            {rows?.length !== 0 &&
                 <Paper sx={{ width: "100%" }}>
                     <TableContainer sx={{ maxHeight: 440 }}>
                         <Table stickyHeader aria-label="sticky table">
@@ -155,7 +157,14 @@ function RecipientList() {
 }
 
 function RecipientPage(props) {
-    return <RecipientList></RecipientList>;
+    return (
+        <>
+            <AddRecipientDialog
+                sx={{ marginBottom: 3 }}
+            ></AddRecipientDialog>
+            <RecipientList></RecipientList>
+        </>
+    );
 }
 
 export default RecipientPage;

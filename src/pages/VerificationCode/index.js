@@ -8,15 +8,16 @@ import {
 } from "@mui/material";
 import Footer from "../../components/Footer";
 import { useNavigate } from "react-router-dom";
+import { setOtpCodeForgotPassword } from "../../features/User/userSlice";
+import { useDispatch } from "react-redux";
 
 function VerificationCodePage(props) {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const handleSubmit = (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        console.log({
-            code: data.get("otp-code"),
-        });
+        dispatch(setOtpCodeForgotPassword(data.get("otp-code")));
         navigate("/reset-password");
     };
     const resendCodeHandle = (event) => {
