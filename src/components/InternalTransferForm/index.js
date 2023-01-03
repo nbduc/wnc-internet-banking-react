@@ -6,7 +6,9 @@ import {
     FormControl,
     InputLabel,
     Typography,
-    FormHelperText
+    FormHelperText,
+    FormControlLabel,
+    Checkbox,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 import AccountListDialog from "../AccountListDialog";
@@ -14,20 +16,25 @@ import MessageAlert from "../MessageAlert";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectAccountList } from "../../features/Account/accountSlice";
-import { CHARGE_CODE } from "../../common";
+import { CHARGE_CODE, INTERNAL_BANK_ID } from "../../common";
 import { accountApiSlice } from "../../features/Account/accountApiSlice";
 import { selectRecipientList } from "../../features/Recipient/recipientSlice";
 import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
 import { useExecuteInternalTransferMutation } from "../../features/Transfer/transferApiSlice";
 import OtpDialog from "../OtpDialog";
+import { useAddRecipientMutation } from "../../features/Recipient/recipientApiSlice";
+import { selectCustomerId } from "../../features/Auth/authSlice";
 
 function InternalTransferForm(props) {
+    const bankId = INTERNAL_BANK_ID;
+    const customerId = useSelector(selectCustomerId);
     const accountList = useSelector(selectAccountList);
     const recipientList = useSelector(selectRecipientList);
 
     const [getAccountByAccountNumber] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
-    const [executeInternalTransfer, {isLoading, isError, isSuccess}] = useExecuteInternalTransferMutation();
+    const [executeInternalTransfer, { isLoading, isError, isSuccess }] = useExecuteInternalTransferMutation();
+    const [addRecipient, {isLoading: addRecipientLoading, isError: addRecipientError, isSuccess: addRecipientSuccess}] = useAddRecipientMutation();
 
     const [fromAccount, setFromAccount] = useState("");
     const [toAccountNumber, setToAccountNumber] = useState("");
@@ -39,6 +46,8 @@ function InternalTransferForm(props) {
     const [msg, setMsg] = useState('');
     const [orderNumber, setOrderNumber] = useState("");
     const [otpDialogOpen, setOtpDialogOpen] = useState(false);
+    const [saveRecipientChecked, setSaveRecipientChecked] = useState(false);
+    const isNewRecipient = !recipientList?.some(recipient => recipient.accountNumber === toAccountNumber);
     const handleOtpDialogClose = (event, reason) => {
         if (reason && reason === "backdropClick") return;
         setOtpDialogOpen(false);
@@ -77,6 +86,10 @@ function InternalTransferForm(props) {
             }
         }
     }
+    const handleSaveRecipientInput = (event) => {
+        setSaveRecipientChecked(!saveRecipientChecked);
+    }
+
     const onSetToAccount = (toAccountNumber, toAccountName) => {
         setToAccountName(toAccountName);
         setToAccountNumber(toAccountNumber);
@@ -104,6 +117,14 @@ function InternalTransferForm(props) {
         const data = await validate({ fromAccount, toAccountNumber, amount, chargeCode });
         if (data === null) return;
         try {
+            if (saveRecipientChecked) {
+                await addRecipient({
+                    accountNumber: toAccountNumber,
+                    accountName: toAccountName,
+                    bankId,
+                    customerId,
+                }).unwrap();
+            }
             const { fromAccountName, fromAccountNumber } = JSON.parse(fromAccount);
             const response = await executeInternalTransfer({
                 fromAccountNumber,
@@ -204,6 +225,11 @@ function InternalTransferForm(props) {
                     autoComplete="recipient-name"
                     value={toAccountName}
                 />
+                {toAccountNumber && toAccountName && isNewRecipient &&
+                    <FormControlLabel control={
+                        <Checkbox checked={saveRecipientChecked} onChange={handleSaveRecipientInput} />
+                    } label="Lưu lại người nhận này." />
+                }
                 <AccountListDialog
                     onSetAccount={onSetToAccount}
                     accountList={recipientList}
@@ -258,7 +284,7 @@ function InternalTransferForm(props) {
                     fullWidth
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
-                    loading={isLoading}
+                    loading={isLoading || addRecipientLoading}
                     disabled={!canSubmit}
                 >
                     Chuyển tiền
