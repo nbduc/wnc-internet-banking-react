@@ -139,3 +139,53 @@ function ResetPasswordPage(props) {
 }
 
 export default ResetPasswordPage;
+
+/*
+* Check loi reset password
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+*
+* */
