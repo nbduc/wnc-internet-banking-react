@@ -125,3 +125,5 @@ export const currencyFormatter = (currency) => new Intl.NumberFormat("vi-VN", {
     style: "currency",
     currency: "VND",
 }).format(currency);
+
+export const INTERNAL_BANK_ID = "1";

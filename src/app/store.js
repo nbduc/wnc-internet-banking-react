@@ -5,6 +5,7 @@ import userReducer from "../features/User/userSlice";
 import paymentRequestReducer from "../features/PaymentRequest/paymentRequestSlice";
 import accountReducer from "../features/Account/accountSlice";
 import recipientReducer from "../features/Recipient/recipientSlice";
+import bankReducer from "../features/Bank/bankSlice";
 import { apiSlice } from "./apiSlice";
 
 const store = configureStore({
@@ -16,6 +17,7 @@ const store = configureStore({
         paymentRequest: paymentRequestReducer,
         account: accountReducer,
         recipient: recipientReducer,
+        bank: bankReducer,
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware({
