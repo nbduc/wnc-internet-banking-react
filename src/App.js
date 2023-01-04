@@ -42,6 +42,7 @@ function App() {
     useGetAccountsByCustomerIdQuery(customerId, {
         skip: customerId ? false : true
     });
+    
     useGetRecipientsByCustomerIdQuery(customerId, {
         skip: customerId ? false : true
     });

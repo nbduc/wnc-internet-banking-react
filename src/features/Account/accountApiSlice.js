@@ -51,7 +51,7 @@ export const accountApiSlice = apiSlice.injectEndpoints({
         }),
         getTransactionHistoryByAccountNumber: builder.query({
             query: (accountNumber) => ({
-                url: `api/accounts/account-number/${accountNumber}/transaction-history`,
+                url: `api/transactions/account-number/${accountNumber}`,
                 method: "GET"
             }),
             transformResponse: (response) => {
