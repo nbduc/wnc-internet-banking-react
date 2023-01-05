@@ -10,7 +10,7 @@ function Copyright(props) {
         >
             {"Copyright © "}
             <Link color="inherit" href="/">
-                Internet Banking
+                Internet Banking - Nhóm 13 - 21 HCB
             </Link>{" "}
             {new Date().getFullYear()}
             {"."}
