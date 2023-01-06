@@ -20,6 +20,7 @@ import usePersist from "../../hooks/usePersist";
 import { useSelector } from "react-redux";
 import { selectRole } from "../../features/Auth/authSlice";
 import { employeeListItems, adminListItems, customerListItems, ROLES } from "../../common";
+import { appName } from "../../common";
 
 function LoginPage(props) {
     const [login, { isLoading: isLoggingIn }] = useLoginMutation();
@@ -45,7 +46,7 @@ function LoginPage(props) {
                 case ROLES.admin: return adminListItems[0].link;
                 case ROLES.employee: return employeeListItems[0].link;
                 case ROLES.customer: return customerListItems[0].link;
-                default: return '/';
+                default: return '#/';
             }
         })()
         const from = location.state?.from?.pathname || getFirstPlace;
@@ -114,15 +115,19 @@ function LoginPage(props) {
                             marginTop: 8,
                             display: "flex",
                             flexDirection: "column",
-                            alignItems: "flex-start",
+                            alignItems: "center",
                         }}
                     >
                         <Typography component="h2" variant="h5">
                             Chào mừng bạn đến với
                         </Typography>
                         <Typography component="h1" variant="h4">
+                            {appName}
+                        </Typography>
+                        <Typography component="h2" variant="h6">
                             Internet Banking
                         </Typography>
+                        <img src="/logo.png" alt="logo" style={{ width: "200px", height: "200px"} } />
                         <Box
                             component="form"
                             onSubmit={handleSubmit}

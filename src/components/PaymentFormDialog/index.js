@@ -11,12 +11,20 @@ import IconButton from "@mui/material/IconButton";
 import PaymentsIcon from "@mui/icons-material/Payment";
 import { Divider, List, ListItem, ListItemText, Typography } from "@mui/material";
 import { currencyFormatter } from "../../common";
-import { accountApiSlice } from "../../features/Account/accountApiSlice";
 import { LoadingButton } from "@mui/lab";
+import { usePayDebtMutation } from "../../features/PaymentRequest/paymentRequestApiSlice";
+import { useLazyGetAccountByAccountNumberQuery } from "../../features/Account/accountApiSlice";
+import OtpDialog from "../OtpDialog";
+import MessageAlert from "../MessageAlert";
 
 function PaymentFormDialog({ debt }) {
-    const [getAccountByAccountNumber] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+    const [payDebt, {isLoading, isError, isSuccess}] = usePayDebtMutation();
+
+    const [getAccountByAccountNumber] = useLazyGetAccountByAccountNumberQuery();
     const [currentBalance, setCurrentBalance] = React.useState(0);
+    const [msg, setMsg] = React.useState("");
+    const [otpDialogOpen, setOtpDialogOpen] = React.useState(false);
+    const [orderNumber, setOrderNumber] = React.useState("");
 
     const [open, setOpen] = React.useState(false);
 
@@ -36,10 +44,41 @@ function PaymentFormDialog({ debt }) {
         setOpen(false);
     };
 
+    const handleOtpDialogClose = (event, reason) => {
+        if (reason && reason === "backdropClick") return;
+        setOtpDialogOpen(false);
+        setOpen(false);
+    };
+
     const canSubmit = currentBalance - debt.amount >= 0;
+    const handleSubmit = async () => {
+        try {
+            const response = await payDebt(debt.id).unwrap();
+            response.message ? setMsg(response.message) : setMsg("");
+            setOrderNumber(response.data);
+            setOtpDialogOpen(true);
+        } catch (err) {
+            setMsg('');
+            if (err.message) {
+                setMsg(err.message);
+            } else if(!err.success && err.data){
+                setMsg(err.data?.errors?.join('</br>'));
+            } else {
+                setMsg("Không thể thực hiện.");
+            }
+        }
+    }
 
     return (
         <>
+            {(isError || isSuccess) &&
+                <MessageAlert
+                    message={msg}
+                    hidden={false}
+                    severity={isError? "error" : "success"}
+                ></MessageAlert>
+            }
+            <OtpDialog orderNumber={orderNumber} open={otpDialogOpen} onClose={handleOtpDialogClose}></OtpDialog>
             <Tooltip title="Thanh toán nợ">
                 <IconButton color="primary" onClick={handleClickOpen}>
                     <PaymentsIcon />
@@ -79,7 +118,8 @@ function PaymentFormDialog({ debt }) {
                 <DialogActions>
                     <Button onClick={handleClose}>Hủy</Button>
                     <LoadingButton
-                        onClick={handleClose}
+                        loading={isLoading}
+                        onClick={handleSubmit}
                         disabled={!canSubmit}
                     >Thanh toán</LoadingButton>
                 </DialogActions>

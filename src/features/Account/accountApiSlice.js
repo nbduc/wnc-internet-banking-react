@@ -9,6 +9,7 @@ export const accountApiSlice = apiSlice.injectEndpoints({
                 url: `api/accounts?customerId=${customerId}`,
                 method: "GET",
             }),
+            providesTags: ["Accounts"],
             transformResponse: (response) => response.data,
             transformErrorResponse: (response) => response.data,
             async onQueryStarted(id, { dispatch, queryFulfilled, getState }) {
@@ -76,4 +77,5 @@ export const {
     useGetAccountsByEmailQuery,
     useGetTransactionHistoryByAccountNumberQuery,
     useGetAccountByAccountNumberQuery,
+    useLazyGetAccountByAccountNumberQuery,
 } = accountApiSlice;

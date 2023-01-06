@@ -6,6 +6,9 @@ const baseQuery = fetchBaseQuery({
     credentials: "include",
     prepareHeaders: (headers, { getState }) => {
         const token = getState().auth.accessToken;
+        headers.set("Access-Control-Allow-Headers", "*");
+        headers.set("Access-Control-Allow-Origin", "*");
+        headers.set("Access-Control-Allow-Methods", "*");
         headers.set("Access-Control-Allow-Credentials", "true");
         headers.set("XApiKey", "day la api key");
         if (token) {

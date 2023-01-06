@@ -1,4 +1,5 @@
 import { Typography, Link } from "@mui/material";
+import { appName } from "../../common";
 
 function Copyright(props) {
     return (
@@ -10,7 +11,7 @@ function Copyright(props) {
         >
             {"Copyright © "}
             <Link color="inherit" href="/">
-                Internet Banking
+                {appName}
             </Link>{" "}
             {new Date().getFullYear()}
             {"."}

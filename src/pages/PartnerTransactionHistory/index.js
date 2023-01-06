@@ -19,14 +19,19 @@ import { Typography } from "@mui/material";
 import DeleteEmployeeDialog from "../../components/DeleteEmployeeDialog";
 
 const columns = [
-    { id: "id", label: "Mã nhân viên", minWidth: 30 },
-    { id: "name", label: "Tên nhân viên", minWidth: 100 },
-    { id: "role", label: "Vai trò", minWidth: 30, },
-    { id: "actions", label: "Thao tác", minWidth: 50 },
+    { id: "transactionDate", label: "Thời gian giao dịch", minWidth: 30 },
+    { id: "transactionType", label: "Tên giao dịch", minWidth: 20 },
+    { id: "amount", label: "Số tiền", minWidth: 30, },
+    { id: "bank", label: "Ngân hàng", minWidth: 30 },
+    { id: "fromAccountName", label: "Tên người gửi", minWidth: 30 },
+    { id: "fromAccountNumber", label: "STK người gửi", minWidth: 30 },
+    { id: "toAccountName", label: "Tên người nhận", minWidth: 30 },
+    { id: "toAccountNumber", label: "STK người nhận", minWidth: 30 },
+    { id: "content", label: "Nội dung", minWidth: 30 },
 ];
 
-function createData(id, name, firstName, lastName, email, phone, role, active ) {
-    return { id, name, firstName, lastName, email, phone, role, active  };
+function createData(transactionDate, transactionType, amount, bank, partnerAccountName, partnerAccountNumber, accountName, accountNumber, content ) {
+    return { transactionDate, transactionType, amount, bank, partnerAccountName, partnerAccountNumber, accountName, accountNumber, content  };
 }
 
 function TransactionList() {

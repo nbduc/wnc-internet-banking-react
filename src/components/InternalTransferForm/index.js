@@ -11,13 +11,13 @@ import {
     Checkbox,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import LinearIndeterminate from "../LinearIndeterminate";
 import AccountListDialog from "../AccountListDialog";
 import MessageAlert from "../MessageAlert";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import { selectAccountList } from "../../features/Account/accountSlice";
 import { CHARGE_CODE, INTERNAL_BANK_ID } from "../../common";
-import { accountApiSlice } from "../../features/Account/accountApiSlice";
 import { selectRecipientList } from "../../features/Recipient/recipientSlice";
 import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
@@ -25,6 +25,7 @@ import { useExecuteInternalTransferMutation } from "../../features/Transfer/tran
 import OtpDialog from "../OtpDialog";
 import { useAddRecipientMutation } from "../../features/Recipient/recipientApiSlice";
 import { selectCustomerId } from "../../features/Auth/authSlice";
+import { useLazyGetAccountByAccountNumberQuery } from "../../features/Account/accountApiSlice";
 
 function InternalTransferForm(props) {
     const bankId = INTERNAL_BANK_ID;
@@ -32,7 +33,7 @@ function InternalTransferForm(props) {
     const accountList = useSelector(selectAccountList);
     const recipientList = useSelector(selectRecipientList);
 
-    const [getAccountByAccountNumber] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+    const [getAccountByAccountNumber, { isFetching: accountLoading }] = useLazyGetAccountByAccountNumberQuery();
     const [executeInternalTransfer, { isLoading, isError, isSuccess }] = useExecuteInternalTransferMutation();
     const [addRecipient, {isLoading: addRecipientLoading, isError: addRecipientError, isSuccess: addRecipientSuccess}] = useAddRecipientMutation();
 
@@ -215,6 +216,7 @@ function InternalTransferForm(props) {
                     error={toAccountErrMsg !== '' || errors('toAccountNumber')}
                     helperText={toAccountErrMsg? toAccountErrMsg : texts('toAccountNumber')}
                 />
+                {accountLoading && <LinearIndeterminate/>}
                 <TextField
                     margin="normal"
                     disabled

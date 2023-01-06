@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material";
+import { Grid, Typography } from "@mui/material";
 import ControlledAccordion from "../../components/ControlledAccordion";
 import AccountCard from "../../components/AccountCard/index.js";
 import { useSelector } from "react-redux";
@@ -13,6 +13,7 @@ export default function HomePage() {
         <>
             <LoadingBackdrop open={isLoading} />
             <ControlledAccordion title="Tài khoản thanh toán" defaultExpanded>
+                {!accountList && <Typography variant="body1">Không có tài khoản nào.</Typography>}
                 <Grid container spacing={2}>
                     {accountList?.map((account, idx) => 
                         <Grid item xs={4} key={idx}>

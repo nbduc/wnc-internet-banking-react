@@ -15,9 +15,12 @@ function Footer(props) {
                         : theme.palette.grey[800],
             }}
         >
-            <Container maxWidth="sm">
-                <Typography variant="body1">Đồ án cuối kỳ.</Typography>
-                <Copyright />
+            <Container maxWidth="sm" sx={{display: "flex", justifyContent: "center", alignItems: "center"}}>
+                <img src="/logo.png" alt="logo" style={{ width: "80px", height: "80px" }}></img>
+                <Box sx={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
+                    <Typography variant="body1">Đồ án cuối kỳ.</Typography>
+                    <Copyright />
+                </Box>
             </Container>
         </Box>
     );

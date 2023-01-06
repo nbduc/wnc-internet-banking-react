@@ -10,6 +10,8 @@ import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import LogoutIcon from "@mui/icons-material/Logout";
 
+export const appName = "Nhóm 13 Bank";
+
 export const customerListItems = [
     {
         title: "Trang chủ",

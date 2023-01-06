@@ -16,6 +16,7 @@ import Footer from "../../components/Footer";
 import NavItems from "../../components/NavItems";
 import UserActions from "../../components/UserActions";
 import { useSelector } from "react-redux";
+import { appName } from "../../common";
 
 function DefaultLayout({ children }) {
     const [open, setOpen] = React.useState(true);
@@ -64,10 +65,11 @@ function DefaultLayout({ children }) {
                     sx={{
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "flex-end",
+                        justifyContent: "space-between",
                         px: [1],
                     }}
                 >
+                    <Typography element="h2" variant="h6" sx={{paddingLeft: 2}}>{appName}</Typography>
                     <IconButton onClick={toggleDrawer}>
                         <ChevronLeftIcon />
                     </IconButton>

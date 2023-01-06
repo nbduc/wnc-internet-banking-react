@@ -12,9 +12,10 @@ import { useSelector } from "react-redux";
 import { useCreatePaymentRequestMutation } from "../../features/PaymentRequest/paymentRequestApiSlice";
 import MessageAlert from "../MessageAlert";
 import LoadingButton from "@mui/lab/LoadingButton";
-import { accountApiSlice } from "../../features/Account/accountApiSlice";
+import { useLazyGetAccountByAccountNumberQuery } from "../../features/Account/accountApiSlice";
 import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
+import LinearIndeterminate from "../LinearIndeterminate";
 
 function PaymentRequestFormDialog() {
     const { list: paymentRequestList, loading: paymentRequestLoading } = useSelector(state => state.paymentRequest);
@@ -31,7 +32,7 @@ function PaymentRequestFormDialog() {
 
     const [createPaymentRequest, { isLoading, isError, isSuccess }] = useCreatePaymentRequestMutation();
     
-    const [ getAccountByAccountNumber ] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+    const [ getAccountByAccountNumber, {isFetching: accountLoading} ] = useLazyGetAccountByAccountNumberQuery();
 
     const [toAccountNumber, setToAccountNumber] = React.useState('');
     const [toAccountName, setToAccountName] = React.useState('');
@@ -145,6 +146,8 @@ function PaymentRequestFormDialog() {
                         đến cho người nợ. Người nợ xem được nhắc nợ này ở màn
                         hình <b>Xem danh sách nợ chưa thanh toán</b>.
                     </DialogContentText>
+                    <br/>
+                    {accountLoading && <LinearIndeterminate/>}
                     <Box component="form" noValidate sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
@@ -160,11 +163,6 @@ function PaymentRequestFormDialog() {
                             error={toAccountErrMsg !== '' || errors('toAccountNumber')}
                             helperText={toAccountErrMsg? toAccountErrMsg : texts('toAccountNumber')}
                         />
-                        <AccountListDialog
-                            onSetAccount={onSetToAccount}
-                            accountList={debtorList}
-                            loading={paymentRequestLoading}
-                        ></AccountListDialog>
                         <TextField
                             margin="normal"
                             fullWidth
@@ -174,6 +172,11 @@ function PaymentRequestFormDialog() {
                             disabled={true}
                             value={toAccountName}
                         />
+                         <AccountListDialog
+                            onSetAccount={onSetToAccount}
+                            accountList={debtorList}
+                            loading={paymentRequestLoading}
+                        ></AccountListDialog>
                         <TextField
                             margin="normal"
                             required

@@ -17,9 +17,10 @@ import * as Yup from "yup";
 import useFormValidator from "../../hooks/useFormValidator";
 import MessageAlert from "../MessageAlert";
 import { useGetAllBanksQuery } from "../../features/Bank/bankApiSlice";
-import { accountApiSlice } from "../../features/Account/accountApiSlice";
+import { useLazyGetAccountByAccountNumberQuery } from "../../features/Account/accountApiSlice";
 import { useSelector } from "react-redux";
 import { selectCustomerId } from "../../features/Auth/authSlice";
+import LinearIndeterminate from "../LinearIndeterminate";
 
 function AddRecipientDialog(props) {
     const { data: bankList } = useGetAllBanksQuery();
@@ -40,7 +41,7 @@ function AddRecipientDialog(props) {
         setBankId(event.target.value);
     }
 
-    const [getAccountByAccountNumber] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+    const [getAccountByAccountNumber, {isFetching: accountLoading}] = useLazyGetAccountByAccountNumberQuery();
     const getAndSetAccountName = async () => {
         setAccountName("");
         if (accountNumber && bankId) {
@@ -88,7 +89,7 @@ function AddRecipientDialog(props) {
     }
 
     const [ addRecipient, { isLoading, isError, isSuccess }] = useAddRecipientMutation();
-    const canSubmit = accountNumber && accountName && nickName && bankId && customerId;
+    const canSubmit = accountNumber && accountName && bankId && customerId;
     const handleSubmit = async (e) => {
         e.preventDefault();
         const data = await validate({
@@ -135,6 +136,7 @@ function AddRecipientDialog(props) {
             <Dialog open={open} onClose={handleClose}>
                 <DialogTitle>Thông tin người nhận</DialogTitle>
                 <DialogContent>
+                    {accountLoading && <LinearIndeterminate/>}
                     <Box component="form" noValidate sx={{ mt: 1 }}>
                         <TextField
                             margin="normal"
@@ -187,7 +189,6 @@ function AddRecipientDialog(props) {
                         />
                         <TextField
                             margin="normal"
-                            required
                             fullWidth
                             name="nickName"
                             label="Tên gợi nhớ"

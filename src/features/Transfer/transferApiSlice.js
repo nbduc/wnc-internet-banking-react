@@ -8,6 +8,7 @@ export const transferApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
                 body: params
             }),
+            transformErrorResponse: (err) => err.data,
         }),
         executeExternalTransfer: builder.mutation({
             query: (params) => ({
@@ -15,6 +16,7 @@ export const transferApiSlice = apiSlice.injectEndpoints({
                 method: "POST",
                 body: params
             }),
+            transformErrorResponse: (err) => err.data,
         }),
         confirmOtp: builder.mutation({
             query: (params) => ({
@@ -22,6 +24,7 @@ export const transferApiSlice = apiSlice.injectEndpoints({
                 method: "PUT",
                 body: params,
             }),
+            invalidatesTags: ["Accounts"],
         }),
     }),
 });

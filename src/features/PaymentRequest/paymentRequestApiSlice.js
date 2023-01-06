@@ -42,7 +42,13 @@ export const paymentRequestApiSlice = apiSlice.injectEndpoints({
                 })
             },
         }),
-        
+        payDebt: builder.mutation({
+            query: (id) => ({
+                url: `api/transfers/debt-payment?debtReminderId=${id}`,
+                method: "POST",
+            }),
+            invalidatesTags: ["Accounts", "Debts"],
+        }),
     }),
 });
 
@@ -51,4 +57,6 @@ export const {
     useCreatePaymentRequestMutation,
     useDeletePaymentRequestMutation,
     useGetDebtListQuery,
+    usePayDebtMutation,
+    useUpdatePaymentRequestMutation,
 } = paymentRequestApiSlice;

@@ -9,11 +9,12 @@ import {
     FormHelperText
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
+import LinearIndeterminate from "../LinearIndeterminate";
 import AccountListDialog from "../AccountListDialog";
 import MessageAlert from "../MessageAlert";
 import { useState } from "react";
 import { useExecuteExternalTransferMutation } from "../../features/Transfer/transferApiSlice";
-import { accountApiSlice } from "../../features/Account/accountApiSlice";
+import { useLazyGetAccountByAccountNumberQuery } from "../../features/Account/accountApiSlice";
 import { selectAccountList } from "../../features/Account/accountSlice";
 import { selectRecipientList } from "../../features/Recipient/recipientSlice";
 import { useGetAllBanksQuery } from "../../features/Bank/bankApiSlice";
@@ -28,7 +29,7 @@ function ExternalTransferForm(props) {
     let recipientList = useSelector(selectRecipientList);
     const { data: bankList } = useGetAllBanksQuery();
 
-    const [getAccountByAccountNumber] = accountApiSlice.endpoints.getAccountByAccountNumber.useLazyQuery();
+    const [getAccountByAccountNumber, { isFetching: accountLoading }] = useLazyGetAccountByAccountNumberQuery();
     const [executeExternalTransfer, {isLoading, isError, isSuccess}] = useExecuteExternalTransferMutation();
     
     const [fromAccount, setFromAccount] = useState("");
@@ -225,6 +226,7 @@ function ExternalTransferForm(props) {
                     error={toAccountErrMsg !== '' || errors("toAccountNumber")}
                     helperText={toAccountErrMsg? toAccountErrMsg : texts("toAccountNumber")}
                 />
+                {accountLoading && <LinearIndeterminate/>}
                 <TextField
                     margin="normal"
                     disabled
