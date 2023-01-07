@@ -32,62 +32,14 @@ import PersistLogin from "./components/PersistLogin";
 import { selectCustomerId } from "./features/Auth/authSlice";
 import { useGetAccountsByCustomerIdQuery } from "./features/Account/accountApiSlice";
 import { useGetRecipientsByCustomerIdQuery } from "./features/Recipient/recipientApiSlice";
-import { HubConnectionBuilder } from "@microsoft/signalr";
 import { Snackbar, IconButton } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
-import { addNotification } from "./features/Notification/notificationSlice";
 
 function App() {
     const dispatch = useDispatch();
     const customerId = useSelector(selectCustomerId);
-    const [msg, setMsg] = useState('');
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const handleSnackbarClose = (event, reason) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-        setSnackbarOpen(false);
-    }
-    const [connection, setConnection] = useState(null);
-    useEffect(() => {
-        const connect = new HubConnectionBuilder()
-            .withUrl(`${process.env.REACT_APP_BASE_URL}/notihub`)
-            .withAutomaticReconnect()
-            .build();
-    
-        setConnection(connect);
-    }, []);
-
-    useEffect(() => {
-        if (connection) {
-            connection
-                .start()
-                .then(() => {
-                    connection.on("DeleteDebt", (response) => {
-                        const { notifyTo, message } = response;
-                        if (customerId == notifyTo) {
-                            setMsg(message);
-                            setSnackbarOpen(true);
-                            dispatch(addNotification(message));
-                        }
-                    });
-                    connection.on("CreateDebt", (response) => {
-                        const { notifyTo, message } = response;
-                        if (customerId == notifyTo) {
-                            setMsg(message);
-                            setSnackbarOpen(true);
-                            dispatch(addNotification(message));
-                        }
-                    });
-                })
-                .catch((error) => console.log(error));
-        }
-    }, [connection, dispatch]);
-
-    
     const location = useLocation();
     const pageListItems = useSelector(state => state.pageList.items);
-
     
     useGetAccountsByCustomerIdQuery(customerId, {
         skip: customerId ? false : true
@@ -109,22 +61,6 @@ function App() {
     }, [dispatch, location, pageListItems]);
     return (
         <div className="App">
-            <Snackbar
-                open={snackbarOpen}
-                autoHideDuration={6000}
-                onClose={handleSnackbarClose}
-                message={msg}
-                action={
-                    <IconButton
-                        size="small"
-                        aria-label="close"
-                        color="inherit"
-                        onClick={handleSnackbarClose}
-                    >
-                        <CloseIcon fontSize="small" />
-                    </IconButton>
-                }
-            ></Snackbar>
             <Routes>
                 {/* public routes */}
                 <Route exact path="/login" element={<LoginPage />} />

@@ -1,6 +1,9 @@
 # Nhóm 13 - Internet banking
 
 Đồ án môn học Các công nghệ lập trình hiện đại
+21424006 - Nguyễn Bá Đức
+21424050 - Nguyễn Công Thắng
+21424072 - Nguyễn Trung Đức
 
 ## Available Scripts
 
