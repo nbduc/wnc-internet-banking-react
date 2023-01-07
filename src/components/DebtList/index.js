@@ -37,41 +37,6 @@ function createData(id, createdDate, fromCustomer, accountName, accountNumber, a
     return { id, createdDate, fromCustomer, amount, accountName, accountNumber, content, status };
 }
 
-/*
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-1
-*/
 function DebtList() {
     const { data: debtList, isLoading } = useGetDebtListQuery();
     const [debtStatusFilter, setDebtStatusFilter] = React.useState("DRAFT");
