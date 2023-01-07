@@ -42,7 +42,7 @@ function AccountListDialog({ onSetAccount, accountList, loading, ...props }) {
                                     onSetAccount(account.accountNumber, account.accountName);
                                 }}>
                                     <ListItemText
-                                        primary={account.nickName}
+                                        primary={account.accountName}
                                         secondary={account.accountNumber}
                                     />
                                 </ListItemButton>
