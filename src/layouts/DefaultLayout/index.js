@@ -5,20 +5,20 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import IconButton from "@mui/material/IconButton";
-import Badge from "@mui/material/Badge";
 import Container from "@mui/material/Container";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 import AppBar from "../../components/AppBar";
 import Drawer from "../../components/Drawer";
 import Footer from "../../components/Footer";
 import NavItems from "../../components/NavItems";
 import UserActions from "../../components/UserActions";
+import Notification from "../../components/Notification";
 import { useSelector } from "react-redux";
 import { appName } from "../../common";
 
 function DefaultLayout({ children }) {
+    
     const [open, setOpen] = React.useState(true);
     const toggleDrawer = () => {
         setOpen(!open);
@@ -52,11 +52,7 @@ function DefaultLayout({ children }) {
                     >
                         {activePageItem ? activePageItem.title : null}
                     </Typography>
-                    <IconButton color="inherit">
-                        <Badge badgeContent={4} color="secondary">
-                            <NotificationsIcon />
-                        </Badge>
-                    </IconButton>
+                    <Notification></Notification>
                     <UserActions></UserActions>
                 </Toolbar>
             </AppBar>

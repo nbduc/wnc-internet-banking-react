@@ -6,6 +6,7 @@ import paymentRequestReducer from "../features/PaymentRequest/paymentRequestSlic
 import accountReducer from "../features/Account/accountSlice";
 import recipientReducer from "../features/Recipient/recipientSlice";
 import bankReducer from "../features/Bank/bankSlice";
+import notificationReducer from "../features/Notification/notificationSlice";
 import { apiSlice } from "./apiSlice";
 
 const store = configureStore({
@@ -18,6 +19,7 @@ const store = configureStore({
         account: accountReducer,
         recipient: recipientReducer,
         bank: bankReducer,
+        notification: notificationReducer,
     },
     middleware: (getDefaultMiddleware) => 
         getDefaultMiddleware({

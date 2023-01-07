@@ -99,9 +99,9 @@ export const TRANSACTION_STATUSES = {
 }
 
 export const PAYMENT_REQUEST_STATUSES = {
-    "DRAFT": "draft",
-    "SENT": "Đã gửi",
-    "PAID": "Đã trả",
+    "DRAFT": "Chưa thanh toán",
+    "SENT": "Chưa thanh toán",
+    "PAID": "Đã thanh toán",
     "DELETED": "Đã xóa"
 }
 

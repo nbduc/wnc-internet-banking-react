@@ -10,7 +10,7 @@ const baseQuery = fetchBaseQuery({
         headers.set("Access-Control-Allow-Origin", "*");
         headers.set("Access-Control-Allow-Methods", "*");
         headers.set("Access-Control-Allow-Credentials", "true");
-        headers.set("XApiKey", "day la api key");
+        headers.set("XApiKey", process.env.REACT_APP_X_API_KEY);
         if (token) {
             headers.set('Authorization', `Bear ${token}`);
         }
